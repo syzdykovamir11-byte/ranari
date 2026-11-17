@@ -7,6 +7,7 @@
   const header = q('.site-header');
   const hasGsap = typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
 
+  if (typeof window.setupCarousel === 'function') document.querySelectorAll('[data-rail]').forEach(window.setupCarousel);
   setupReviews();
   setupMenu();
 
@@ -154,29 +155,38 @@
       .to('.hero-content', { yPercent: -10, autoAlpha: 0.2, ease: 'none' }, 0);
   });
 
-  /* ---------- Grove: branches move at their own depth ---------- */
-  qa('.branch').forEach((branch, index) => {
-    const speed = parseFloat(branch.dataset.speed) || 0.5;
+  /* ---------- Grove: branches grow in from the edges and sway in the scroll wind ---------- */
+  const branches = qa('.branch');
+  branches.forEach(branch => {
+    const speed = parseFloat(branch.dataset.speed) || 0.7;
+    const fromRight = branch.classList.contains('branch--r');
+    // Slow parallax drift while the branch is on screen.
     gsap.fromTo(branch,
-      { y: () => innerHeight * speed * 0.6 },
+      { y: () => innerHeight * speed * 0.35 },
       {
-        y: () => -innerHeight * speed * 0.6,
+        y: () => -innerHeight * speed * 0.35,
         ease: 'none',
         scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true }
       });
-    gsap.to(branch, {
-      rotation: index % 2 ? 3.5 : -3.5,
-      duration: 4 + (index % 4),
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1
+    // Grows out of the screen edge as it enters.
+    gsap.fromTo(branch, { xPercent: fromRight ? 55 : -55 }, {
+      xPercent: 0,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'top 45%', scrub: 0.6 }
     });
   });
 
-  if (finePointer) {
-    const groveX = gsap.quickTo('.grove', 'x', { duration: 1.6, ease: 'power3.out' });
-    window.addEventListener('pointermove', event => groveX((event.clientX / innerWidth - 0.5) * -28), { passive: true });
-  }
+  // Wind: a slow idle sway plus a gust that follows scroll speed. Each branch pivots at the screen edge.
+  let gust = 0;
+  gsap.ticker.add(time => {
+    const velocity = lenis ? lenis.velocity : 0;
+    gust += (Math.max(-8, Math.min(8, velocity * 0.3)) - gust) * 0.05;
+    branches.forEach((branch, index) => {
+      const side = branch.classList.contains('branch--r') ? 1 : -1;
+      const idle = Math.sin(time * (0.55 + (index % 3) * 0.12) + index * 1.7) * 1.8;
+      gsap.set(branch, { rotation: side * (idle + gust * (0.5 + (index % 4) * 0.12)) });
+    });
+  });
 
   /* ---------- Marquee follows scroll speed and direction ---------- */
   const marqueeTrack = q('.marquee-track');
@@ -236,74 +246,15 @@
     });
   });
 
-  /* ---------- Plans: vertical scroll drives a horizontal track ---------- */
-  const plansTrack = q('.plans-track');
-  const plansBar = q('.plans-progress span');
-  mm.add('(min-width: 900px)', () => {
-    const distance = () => Math.max(0, plansTrack.scrollWidth - innerWidth);
-    const tween = gsap.to(plansTrack, {
-      x: () => -distance(),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.plans-pin',
-        start: 'top top',
-        end: () => `+=${distance()}`,
-        pin: true,
-        scrub: 0.8,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: self => { plansBar.style.transform = `scaleX(${self.progress})`; }
-      }
-    });
-
-    gsap.to('.plans-intro', {
-      x: () => -innerWidth * 0.18,
-      autoAlpha: 0,
-      ease: 'none',
-      scrollTrigger: { trigger: '.plans-pin', start: 'top top', end: () => `+=${innerWidth * 0.45}`, scrub: true, invalidateOnRefresh: true }
-    });
-
-    qa('.plan, .plans-divider', plansTrack).forEach((item, index) => {
-      gsap.fromTo(item,
-        { y: 90, rotation: index % 2 ? 4 : -3 },
-        {
-          y: 0,
-          rotation: 0,
-          ease: 'none',
-          scrollTrigger: { trigger: item, containerAnimation: tween, start: 'left 105%', end: 'left 55%', scrub: true }
-        });
-    });
-    qa('.plans-divider .kanji', plansTrack).forEach(kanji => {
-      gsap.fromTo(kanji, { xPercent: 40 }, {
-        xPercent: -40,
-        ease: 'none',
-        scrollTrigger: { trigger: kanji, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true }
-      });
-    });
-
-    // Keyboard focus inside the moving track scrolls the page to that card.
-    const onFocus = event => {
-      const item = event.target.closest('.plan');
-      const trigger = tween.scrollTrigger;
-      if (!item || !trigger) return;
-      const local = Math.min(distance(), Math.max(0, item.offsetLeft - innerWidth * 0.25));
-      const y = trigger.start + local;
-      if (lenis) lenis.scrollTo(y, { immediate: true });
-      else window.scrollTo(0, y);
-    };
-    plansTrack.addEventListener('focusin', onFocus);
-    return () => plansTrack.removeEventListener('focusin', onFocus);
+  /* ---------- Plans: the carousel slides in from the right ---------- */
+  gsap.from('.plans-rail .rail-viewport', {
+    x: () => innerWidth * 0.35,
+    autoAlpha: 0,
+    duration: 1.8,
+    scrollTrigger: { trigger: '.plans-rail', start: 'top 85%' }
   });
-  mm.add('(max-width: 899px)', () => {
-    qa('.plan, .plans-divider', plansTrack).forEach((item, index) => {
-      gsap.from(item, {
-        y: 70,
-        rotation: index % 2 ? 2 : -2,
-        autoAlpha: 0,
-        duration: 1.3,
-        scrollTrigger: { trigger: item, start: 'top 92%' }
-      });
-    });
+  gsap.from('.plans-rail .rail-controls', {
+    y: 30, autoAlpha: 0, delay: 0.4, scrollTrigger: { trigger: '.plans-rail', start: 'top 85%' }
   });
 
   /* ---------- Sensei ---------- */
@@ -397,15 +348,46 @@
     });
   }
 
+  // Real petal photos tumble in 3D: two rotation axes are projected onto the canvas,
+  // the back of a petal reads paler, and near petals are larger, faster and softly blurred.
   function setupPetals(scroller) {
     const canvas = q('.petals');
     if (!canvas || !canvas.getContext) return;
     const context = canvas.getContext('2d');
-    const colors = ['#f2c4cb', '#eab3bb', '#f7dcdc', '#e59aa8', '#fbe6e6'];
+    const sources = ['p1', 'p2', 'p3', 'p4'].map(name => {
+      const image = new Image();
+      image.src = `assets/petals/${name}.png`;
+      return image;
+    });
+    const sprites = [];
     const petals = [];
     let width = 0;
     let height = 0;
     let wind = 0;
+
+    function makeSprite(image) {
+      const front = document.createElement('canvas');
+      front.width = image.naturalWidth;
+      front.height = image.naturalHeight;
+      front.getContext('2d').drawImage(image, 0, 0);
+      // The underside of a petal is lighter and less saturated.
+      const back = document.createElement('canvas');
+      back.width = front.width;
+      back.height = front.height;
+      const backContext = back.getContext('2d');
+      backContext.drawImage(image, 0, 0);
+      backContext.globalCompositeOperation = 'source-atop';
+      backContext.fillStyle = 'rgba(255, 236, 238, .42)';
+      backContext.fillRect(0, 0, back.width, back.height);
+      // A softened copy for petals close to the camera.
+      const near = document.createElement('canvas');
+      near.width = front.width;
+      near.height = front.height;
+      const nearContext = near.getContext('2d');
+      if ('filter' in nearContext) nearContext.filter = 'blur(2.5px)';
+      nearContext.drawImage(image, 0, 0);
+      return { front, back, near, ratio: front.height / front.width };
+    }
 
     function resize() {
       const ratio = Math.min(devicePixelRatio || 1, 2);
@@ -414,62 +396,74 @@
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const wanted = width < 700 ? 14 : 26;
+      const wanted = width < 700 ? 12 : 22;
       while (petals.length < wanted) petals.push(spawn({}, true));
       petals.length = wanted;
     }
 
     function spawn(petal, anywhere) {
+      const depth = Math.random();
+      petal.depth = depth;
       petal.x = Math.random() * width;
-      petal.y = anywhere ? Math.random() * height : -24;
-      petal.size = 5 + Math.random() * 8;
-      petal.fall = 0.35 + Math.random() * 0.65;
-      petal.drift = 0.15 + Math.random() * 0.45;
+      petal.y = anywhere ? Math.random() * height : -60;
+      petal.size = 20 + depth * depth * 46;
+      petal.fall = 0.35 + depth * 0.9;
+      petal.drift = 0.15 + Math.random() * 0.5;
       petal.angle = Math.random() * Math.PI * 2;
-      petal.spin = (Math.random() - 0.5) * 0.03;
-      petal.flip = Math.random() * Math.PI * 2;
-      petal.flipSpeed = 0.015 + Math.random() * 0.03;
+      petal.spin = (Math.random() - 0.5) * 0.02;
+      petal.tiltX = Math.random() * Math.PI * 2;
+      petal.tiltY = Math.random() * Math.PI * 2;
+      petal.tiltXSpeed = 0.012 + Math.random() * 0.03;
+      petal.tiltYSpeed = 0.008 + Math.random() * 0.022;
       petal.sway = Math.random() * Math.PI * 2;
-      petal.color = colors[Math.floor(Math.random() * colors.length)];
-      petal.alpha = 0.5 + Math.random() * 0.45;
+      petal.sprite = Math.floor(Math.random() * 4);
+      petal.alpha = 0.55 + depth * 0.45;
       return petal;
     }
 
     function draw(petal) {
-      const s = petal.size;
+      const sprite = sprites[petal.sprite];
+      if (!sprite) return;
+      const scaleX = Math.cos(petal.tiltY);
+      const scaleY = Math.cos(petal.tiltX);
+      const facing = scaleX * scaleY;
+      const w = petal.size;
+      const h = petal.size * sprite.ratio;
+      const image = petal.depth > 0.86 ? sprite.near : facing < 0 ? sprite.back : sprite.front;
       context.save();
       context.translate(petal.x, petal.y);
       context.rotate(petal.angle);
-      context.scale(1, Math.max(0.15, Math.abs(Math.cos(petal.flip))));
-      context.globalAlpha = petal.alpha;
-      context.fillStyle = petal.color;
-      context.beginPath();
-      context.moveTo(0, s);
-      context.bezierCurveTo(-s, s * 0.35, -s * 0.85, -s * 0.85, -s * 0.2, -s);
-      context.lineTo(0, -s * 0.7);
-      context.lineTo(s * 0.2, -s);
-      context.bezierCurveTo(s * 0.85, -s * 0.85, s, s * 0.35, 0, s);
-      context.fill();
+      context.scale(Math.sign(scaleX || 1) * Math.max(0.12, Math.abs(scaleX)), Math.max(0.12, Math.abs(scaleY)));
+      // Edge-on petals catch less light.
+      context.globalAlpha = petal.alpha * (0.7 + 0.3 * Math.abs(facing));
+      context.drawImage(image, -w / 2, -h / 2, w, h);
       context.restore();
     }
+
+    Promise.all(sources.map(image => (image.decode ? image.decode().catch(() => {}) : Promise.resolve()))).then(() => {
+      sources.forEach(image => { if (image.naturalWidth) sprites.push(makeSprite(image)); });
+      while (sprites.length && sprites.length < 4) sprites.push(sprites[0]);
+    });
 
     resize();
     window.addEventListener('resize', resize);
     gsap.ticker.add((time, delta) => {
-      if (document.hidden) return;
+      if (document.hidden || !sprites.length) return;
       const step = Math.min(delta, 50) / 16.7;
       const velocity = scroller ? scroller.velocity : 0;
       wind += (velocity - wind) * 0.06;
       context.clearRect(0, 0, width, height);
+      petals.sort((a, b) => a.depth - b.depth);
       petals.forEach(petal => {
-        petal.sway += 0.02 * step;
-        petal.flip += petal.flipSpeed * step;
+        petal.sway += 0.018 * step;
+        petal.tiltX += petal.tiltXSpeed * step;
+        petal.tiltY += petal.tiltYSpeed * step;
         petal.angle += petal.spin * step;
-        petal.x += (petal.drift + Math.sin(petal.sway) * 0.6) * step;
-        petal.y += (petal.fall - wind * 0.35) * step;
-        if (petal.y > height + 30) spawn(petal, false);
-        if (petal.y < -40) { spawn(petal, false); petal.y = height + 20; }
-        if (petal.x > width + 30) petal.x = -20;
+        petal.x += (petal.drift + Math.sin(petal.sway) * (0.4 + petal.depth * 0.6)) * step;
+        petal.y += (petal.fall - wind * (0.15 + petal.depth * 0.35)) * step;
+        if (petal.y > height + 60) spawn(petal, false);
+        if (petal.y < -80) { spawn(petal, false); petal.y = height + 50; }
+        if (petal.x > width + 60) petal.x = -40;
         draw(petal);
       });
     });

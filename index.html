@@ -20,6 +20,7 @@
   <script src="js/vendor/gsap.min.js" defer></script>
   <script src="js/vendor/ScrollTrigger.min.js" defer></script>
   <script src="js/vendor/lenis.min.js" defer></script>
+  <script src="js/carousel.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
@@ -94,18 +95,20 @@
   </div>
 
   <main id="main" tabindex="-1">
-    <!-- Sakura branches drift past at three depths while the page scrolls. -->
+    <!-- Sakura and plum branches grow in from both screen edges and sway in the scroll wind. -->
     <div class="grove" aria-hidden="true">
-      <img class="branch branch--r branch--back"  style="--top:4%;  --w:34vw; --rot:-8deg;  --flip:-1" data-speed="0.25" src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--l branch--front" style="--top:9%;  --w:62vw; --rot:14deg;  --flip:1"  data-speed="1.6"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--r branch--mid"   style="--top:17%; --w:40vw; --rot:-18deg; --flip:-1" data-speed="0.7"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--l branch--back"  style="--top:27%; --w:30vw; --rot:6deg;   --flip:1"  data-speed="0.3"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--r branch--front" style="--top:36%; --w:70vw; --rot:-22deg; --flip:-1" data-speed="1.8"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--l branch--mid"   style="--top:48%; --w:42vw; --rot:20deg;  --flip:1"  data-speed="0.8"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--r branch--back"  style="--top:58%; --w:32vw; --rot:-4deg;  --flip:-1" data-speed="0.3"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--l branch--front" style="--top:67%; --w:66vw; --rot:10deg;  --flip:1"  data-speed="1.7"  src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--r branch--mid"   style="--top:78%; --w:44vw; --rot:-14deg; --flip:-1" data-speed="0.75" src="assets/sakura-branch.png" width="720" height="360" alt="">
-      <img class="branch branch--r branch--front" style="--top:89%; --w:58vw; --rot:-26deg; --flip:-1" data-speed="1.5"  src="assets/sakura-branch.png" width="720" height="360" alt="">
+      <div class="branch branch--r branch--front" style="--top:3%; --w:46vw; --wm:82vw" data-speed="1.1"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--front" style="--top:9%; --w:40vw; --wm:74vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:19%; --w:36vw; --wm:70vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:25%; --w:34vw; --wm:66vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:35%; --w:42vw; --wm:78vw" data-speed="0.8"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:42%; --w:38vw; --wm:72vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:52%; --w:34vw; --wm:68vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:58%; --w:36vw; --wm:70vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:68%; --w:40vw; --wm:76vw" data-speed="0.8"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:75%; --w:38vw; --wm:72vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:85%; --w:34vw; --wm:68vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:91%; --w:36vw; --wm:70vw" data-speed="0.8"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
     </div>
 
     <section class="hero" id="home" tabindex="-1" aria-labelledby="hero-title">
@@ -173,162 +176,162 @@
     </section>
 
     <section class="plans" id="plans" tabindex="-1" aria-labelledby="plans-title">
-      <div class="plans-pin">
+      <div class="plans-inner">
           <div class="plans-intro">
             <p class="eyebrow"><span class="dot"></span>Форматы обучения</p>
             <h2 class="display" id="plans-title" data-split>Тарифы</h2>
             <p class="plans-lead">Группы открываются по мере набора. Индивидуальные программы подбираем под вашу цель.</p>
             <a class="link" href="https://wa.me/c/77085453459" target="_blank" rel="noopener">Каталог в WhatsApp <span aria-hidden="true">↗</span></a>
-            <p class="plans-hint" aria-hidden="true">Листайте <i></i></p>
+            
           </div>
-        <div class="plans-track">
-
-          <div class="plans-divider" aria-hidden="true">
-            <span class="kanji" lang="ja">仲間</span>
-            <p><b>Nakama</b>групповые занятия</p>
+        <div class="rail plans-rail" data-rail="plans" data-label="Тариф">
+          <div class="rail-viewport" data-viewport role="region" aria-roledescription="карусель" aria-label="Тарифы">
+            <div class="rail-track" data-track>
+              <article class="rail-card plan" data-slide-name="Nakama Basic">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">仲間</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Групповые занятия</p>
+                <h3 class="plan-title">Nakama <span>Basic</span></h3>
+                <p class="plan-tag">Учись вместе, делай первые шаги к мечте</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="2.6"/><circle cx="5.5" cy="10" r="2.1"/><circle cx="18.5" cy="10" r="2.1"/><path d="M7 18c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M1.6 18c0-2.2 1.6-3.6 3.9-3.6M22.4 18c0-2.2-1.6-3.6-3.9-3.6"/></svg><span><b>Групповые занятия</b>3–5 человек</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Группы делятся на два уровня</p>
+                  <ol class="plan-levels">
+                    <li><span class="level-num">1</span><span>с нуля до начального уровня<br>JLPT N5</span></li>
+                    <li><span class="level-num">2</span><span>с начального до базового<br>с JLPT N5 до JLPT N4</span></li>
+                  </ol>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Запись по набору группы</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Nakama Basic">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+              <article class="rail-card plan plan--premium" data-slide-name="Nakama Premium">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">仲間</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Групповые занятия</p>
+                <h3 class="plan-title">Nakama <span>Premium</span></h3>
+                <p class="plan-tag">Учись вместе, достигай большего в поддерживающей группе</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="2.6"/><circle cx="5.5" cy="10" r="2.1"/><circle cx="18.5" cy="10" r="2.1"/><path d="M7 18c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M1.6 18c0-2.2 1.6-3.6 3.9-3.6M22.4 18c0-2.2-1.6-3.6-3.9-3.6"/></svg><span><b>Групповые занятия</b>3–6 человек</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>90 минут</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9"/></svg><span><b>Продолжительность курса</b>10 месяцев</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Включено</p>
+                  <ul class="plan-perks">
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="13" rx="1.4"/><path d="M7.5 7h9M7.5 10h6"/><circle cx="12" cy="18.5" r="3"/><path d="M10.4 21l-.8 2 2.4-1 2.4 1-.8-2"/></svg>Сертификат<br>(180 часов обучения)</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.6"/><path d="M3 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><rect x="13" y="4" width="8" height="6" rx="1.4"/><path d="M16 10v2.4l2.4-2.4"/></svg>Бесплатная консультация по школам Японии</li>
+                  </ul>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Запись по набору группы</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Nakama Premium">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+              <article class="rail-card plan" data-slide-name="Hikari Basic">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">光</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Индивидуальные занятия</p>
+                <h3 class="plan-title">Hikari <span>Basic</span></h3>
+                <p class="plan-tag">Твой мягкий старт в японском языке</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>8 уроков в месяц</b>(2 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без срока</b>учимся в комфортном темпе</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Подходит, если вы</p>
+                  <ul class="plan-perks">
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21v-8"/><path d="M12 13C12 9 9 6.5 5 6.5c0 4 3 6.5 7 6.5z"/><path d="M12 13c0-3.4 2.6-5.6 6-5.6 0 3.4-2.6 5.6-6 5.6z"/></svg>начинаете с нуля</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 18a4 4 0 0 1 .4-8 5.6 5.6 0 0 1 10.7-1.2A4.4 4.4 0 0 1 17.5 18z"/></svg>хотите мягко войти в язык</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 20V13M12 20V8M19 20V4"/></svg>поддерживаете текущий уровень</li>
+                  </ul>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Basic">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+              <article class="rail-card plan" data-slide-name="Hikari Pro">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">光</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Индивидуальные занятия</p>
+                <h3 class="plan-title">Hikari <span>Pro</span></h3>
+                <p class="plan-tag">Твой уверенный прогресс в японском языке</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без ограничений</b>по сроку</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Что вы получаете</p>
+                  <ul class="plan-perks">
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 3c3.6 1.4 5.6 4.6 5.4 8.4l-4.7 4.7-4.3-4.3 4.7-4.7"/><path d="M9.9 11.8 5.6 16.1M8 18.5 5.5 21M13 4.5C9.4 3.6 6 5.4 5 8.9"/><circle cx="14.6" cy="8.4" r="1.2"/></svg>быстрое погружение в язык</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 19V12M9 19V8M14 19v-5M19 19V4"/><path d="M14 8l5-4M19 4v3.4M19 4h-3.4"/></svg>заметный прогресс уже через месяц</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 5.5h11a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H7L3 15z"/><path d="M18 9h2a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 20 16h-1v3l-3.4-3H12"/></svg>максимум практики и разговорной речи</li>
+                  </ul>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа подстраивается под ваши цели</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Pro">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+              <article class="rail-card plan plan--premium" data-slide-name="Hikari Premium">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">光</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Индивидуальные занятия</p>
+                <h3 class="plan-title">Hikari <span>Premium</span></h3>
+                <p class="plan-tag">Премиум-уровень в японском языке</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>90 минут</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9"/></svg><span><b>Продолжительность курса</b>10 месяцев</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Включено</p>
+                  <ul class="plan-perks">
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="13" rx="1.4"/><path d="M7.5 7h9M7.5 10h6"/><circle cx="12" cy="18.5" r="3"/><path d="M10.4 21l-.8 2 2.4-1 2.4 1-.8-2"/></svg>Сертификат<br>(180 часов обучения)</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.6"/><path d="M3 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><rect x="13" y="4" width="8" height="6" rx="1.4"/><path d="M16 10v2.4l2.4-2.4"/></svg>Бесплатная консультация по школам Японии</li>
+                  </ul>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Premium">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+              <article class="rail-card plan plan--premium" data-slide-name="Hikari Native">
+                <span class="plan-kanji" lang="ja" aria-hidden="true">光</span>
+                <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
+                <p class="plan-brand">Индивидуальные занятия</p>
+                <h3 class="plan-title">Hikari <span>Native</span></h3>
+                <p class="plan-tag">Максимальное погружение с носителем японского языка</p>
+                <ul class="plan-list">
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с сенсеем-японцем</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>8 уроков в месяц</b>(2 раза в неделю)</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность одного урока</b>60 минут</span></li>
+                  <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без ограничений</b>по сроку</span></li>
+                </ul>
+                <div class="plan-box">
+                  <p class="plan-box-label">Подходит, если вы</p>
+                  <ul class="plan-perks plan-perks--4">
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="13" r="7"/><circle cx="11" cy="13" r="3.4"/><path d="M17 7l3.4-3.4M18.4 4.6 20.4 3.6l-1 2"/></svg>достигли уровня N4 и выше</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 5.5h11a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H7L3 15z"/><path d="M18 9h2a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 20 16h-1v3l-3.4-3H12"/></svg>хотите улучшить разговорный японский</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4.5 13a7.5 7.5 0 0 1 15 0"/><path d="M4.5 13v3.4A2.6 2.6 0 0 0 7.1 19H8v-7.2H6.6A2.1 2.1 0 0 0 4.5 13zM19.5 13v3.4A2.6 2.6 0 0 1 16.9 19H16v-7.2h1.4a2.1 2.1 0 0 1 2.1 1.2z"/></svg>испытываете трудности с речью носителей</li>
+                    <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18M5 6v14M19 6v14M4 9.5h16M8 20v-5h8v5"/></svg>готовитесь к учёбе, работе или жизни в Японии</li>
+                  </ul>
+                </div>
+                <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
+                <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Native">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+            </div>
           </div>
-
-          <article class="plan" data-slide-name="Nakama Basic">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Nakama <span>Basic</span></h3>
-            <p class="plan-tag">Учись вместе, делай первые шаги к мечте</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="2.6"/><circle cx="5.5" cy="10" r="2.1"/><circle cx="18.5" cy="10" r="2.1"/><path d="M7 18c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M1.6 18c0-2.2 1.6-3.6 3.9-3.6M22.4 18c0-2.2-1.6-3.6-3.9-3.6"/></svg><span><b>Групповые занятия</b>3–5 человек</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Группы делятся на два уровня</p>
-              <ol class="plan-levels">
-                <li><span class="level-num">1</span><span>с нуля до начального уровня<br>JLPT N5</span></li>
-                <li><span class="level-num">2</span><span>с начального до базового<br>с JLPT N5 до JLPT N4</span></li>
-              </ol>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Запись по набору группы</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Nakama Basic">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="plan plan--premium" data-slide-name="Nakama Premium">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Nakama <span>Premium</span></h3>
-            <p class="plan-tag">Учись вместе, достигай большего в поддерживающей группе</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="2.6"/><circle cx="5.5" cy="10" r="2.1"/><circle cx="18.5" cy="10" r="2.1"/><path d="M7 18c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M1.6 18c0-2.2 1.6-3.6 3.9-3.6M22.4 18c0-2.2-1.6-3.6-3.9-3.6"/></svg><span><b>Групповые занятия</b>3–6 человек</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>90 минут</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9"/></svg><span><b>Продолжительность курса</b>10 месяцев</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Включено</p>
-              <ul class="plan-perks">
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="13" rx="1.4"/><path d="M7.5 7h9M7.5 10h6"/><circle cx="12" cy="18.5" r="3"/><path d="M10.4 21l-.8 2 2.4-1 2.4 1-.8-2"/></svg>Сертификат<br>(180 часов обучения)</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.6"/><path d="M3 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><rect x="13" y="4" width="8" height="6" rx="1.4"/><path d="M16 10v2.4l2.4-2.4"/></svg>Бесплатная консультация по школам Японии</li>
-              </ul>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Запись по набору группы</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Nakama Premium">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <div class="plans-divider" aria-hidden="true">
-            <span class="kanji" lang="ja">光</span>
-            <p><b>Hikari</b>индивидуальные занятия</p>
+          <div class="rail-controls">
+            <button class="rail-arrow" type="button" data-prev aria-label="Предыдущий тариф" data-magnetic><span aria-hidden="true">←</span></button>
+            <div class="rail-dots" data-dots role="group" aria-label="Выбрать тариф"></div>
+            <button class="rail-arrow" type="button" data-next aria-label="Следующий тариф" data-magnetic><span aria-hidden="true">→</span></button>
+            <span class="rail-position" data-position></span>
+            <span class="visually-hidden" data-status role="status"></span>
           </div>
-
-          <article class="plan" data-slide-name="Hikari Basic">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Hikari <span>Basic</span></h3>
-            <p class="plan-tag">Твой мягкий старт в японском языке</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>8 уроков в месяц</b>(2 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без срока</b>учимся в комфортном темпе</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Подходит, если вы</p>
-              <ul class="plan-perks">
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21v-8"/><path d="M12 13C12 9 9 6.5 5 6.5c0 4 3 6.5 7 6.5z"/><path d="M12 13c0-3.4 2.6-5.6 6-5.6 0 3.4-2.6 5.6-6 5.6z"/></svg>начинаете с нуля</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 18a4 4 0 0 1 .4-8 5.6 5.6 0 0 1 10.7-1.2A4.4 4.4 0 0 1 17.5 18z"/></svg>хотите мягко войти в язык</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 20V13M12 20V8M19 20V4"/></svg>поддерживаете текущий уровень</li>
-              </ul>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Basic">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="plan" data-slide-name="Hikari Pro">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Hikari <span>Pro</span></h3>
-            <p class="plan-tag">Твой уверенный прогресс в японском языке</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>60 минут</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без ограничений</b>по сроку</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Что вы получаете</p>
-              <ul class="plan-perks">
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 3c3.6 1.4 5.6 4.6 5.4 8.4l-4.7 4.7-4.3-4.3 4.7-4.7"/><path d="M9.9 11.8 5.6 16.1M8 18.5 5.5 21M13 4.5C9.4 3.6 6 5.4 5 8.9"/><circle cx="14.6" cy="8.4" r="1.2"/></svg>быстрое погружение в язык</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 19V12M9 19V8M14 19v-5M19 19V4"/><path d="M14 8l5-4M19 4v3.4M19 4h-3.4"/></svg>заметный прогресс уже через месяц</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 5.5h11a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H7L3 15z"/><path d="M18 9h2a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 20 16h-1v3l-3.4-3H12"/></svg>максимум практики и разговорной речи</li>
-              </ul>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа подстраивается под ваши цели</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Pro">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="plan plan--premium" data-slide-name="Hikari Premium">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Hikari <span>Premium</span></h3>
-            <p class="plan-tag">Премиум-уровень в японском языке</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с преподавателем</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>12 уроков в месяц</b>(3 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность урока</b>90 минут</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h10M7 21h10M8 3c0 4 8 5 8 9s-8 5-8 9M16 3c0 4-8 5-8 9s8 5 8 9"/></svg><span><b>Продолжительность курса</b>10 месяцев</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Включено</p>
-              <ul class="plan-perks">
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="13" rx="1.4"/><path d="M7.5 7h9M7.5 10h6"/><circle cx="12" cy="18.5" r="3"/><path d="M10.4 21l-.8 2 2.4-1 2.4 1-.8-2"/></svg>Сертификат<br>(180 часов обучения)</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.6"/><path d="M3 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><rect x="13" y="4" width="8" height="6" rx="1.4"/><path d="M16 10v2.4l2.4-2.4"/></svg>Бесплатная консультация по школам Японии</li>
-              </ul>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Premium">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="plan plan--premium" data-slide-name="Hikari Native">
-            <span class="plan-motto" lang="ja" aria-hidden="true">日本語がわかると夢はもっと近くなる。</span>
-            <p class="plan-brand"><b>RANARI</b> education</p>
-            <h3 class="plan-title">Hikari <span>Native</span></h3>
-            <p class="plan-tag">Максимальное погружение с носителем японского языка</p>
-            <ul class="plan-list">
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8.4" r="3.2"/><path d="M4.6 20c0-3.8 3.3-6.2 7.4-6.2s7.4 2.4 7.4 6.2"/></svg><span><b>Индивидуальные онлайн-занятия</b>с сенсеем-японцем</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><b>8 уроков в месяц</b>(2 раза в неделю)</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.6"/></svg><span><b>Длительность одного урока</b>60 минут</span></li>
-              <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.6 12c1.4-2.4 2.6-3.4 4.2-3.4 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-1.6 0-2.8-1-4.2-3.4z"/><circle cx="5.3" cy="12" r="3.3"/></svg><span><b>Без ограничений</b>по сроку</span></li>
-            </ul>
-            <div class="plan-box">
-              <p class="plan-box-label">Подходит, если вы</p>
-              <ul class="plan-perks plan-perks--4">
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="13" r="7"/><circle cx="11" cy="13" r="3.4"/><path d="M17 7l3.4-3.4M18.4 4.6 20.4 3.6l-1 2"/></svg>достигли уровня N4 и выше</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 5.5h11a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H7L3 15z"/><path d="M18 9h2a1.5 1.5 0 0 1 1.5 1.5v4A1.5 1.5 0 0 1 20 16h-1v3l-3.4-3H12"/></svg>хотите улучшить разговорный японский</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4.5 13a7.5 7.5 0 0 1 15 0"/><path d="M4.5 13v3.4A2.6 2.6 0 0 0 7.1 19H8v-7.2H6.6A2.1 2.1 0 0 0 4.5 13zM19.5 13v3.4A2.6 2.6 0 0 1 16.9 19H16v-7.2h1.4a2.1 2.1 0 0 1 2.1 1.2z"/></svg>испытываете трудности с речью носителей</li>
-                <li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18M5 6v14M19 6v14M4 9.5h16M8 20v-5h8v5"/></svg>готовитесь к учёбе, работе или жизни в Японии</li>
-              </ul>
-            </div>
-            <p class="plan-note"><svg class="ribbon" width="22" height="30" viewBox="0 0 22 30" aria-hidden="true"><use href="#ribbon"/></svg>Программа полностью подстраивается под ваши цели</p>
-            <a class="plan-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" aria-label="Узнать стоимость в WhatsApp — Hikari Native">Узнать стоимость в WhatsApp <span aria-hidden="true">↗</span></a>
-          </article>
         </div>
-        <div class="plans-progress" aria-hidden="true"><span></span></div>
       </div>
     </section>
 

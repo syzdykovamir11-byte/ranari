@@ -225,22 +225,26 @@ em { font-style: normal; color: var(--rose); }
 .menu-foot { position: relative; display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 40px; font-weight: 600; }
 .menu-foot a { min-height: 44px; display: inline-flex; align-items: center; }
 
-/* ---------- Grove: sakura branches at three depths ---------- */
+/* ---------- Grove: branches grow in from the screen edges ---------- */
 main { position: relative; display: block; }
 main:focus { outline: none; }
 .grove { position: absolute; inset: 0; pointer-events: none; overflow: clip; }
+/* The thick end of the branch sits just past the screen edge, so it reads as growing out of the device. */
 .branch {
-  position: absolute; top: var(--top); width: var(--w); min-width: 240px; max-width: 1100px;
-  rotate: var(--rot); scale: var(--flip) 1; will-change: transform; user-select: none;
+  position: absolute; top: var(--top); width: var(--w); min-width: 260px; max-width: 760px;
+  will-change: transform; user-select: none;
 }
-.branch--l { left: calc(var(--w) * -.28); }
-.branch--r { right: calc(var(--w) * -.28); }
-.branch--back { z-index: 0; opacity: .38; filter: blur(1.5px) saturate(.8); }
-.branch--mid { z-index: 0; opacity: .8; }
-.branch--front { z-index: 5; opacity: .82; filter: blur(5px); min-width: 380px; }
+.branch img { width: 100%; height: auto; filter: drop-shadow(0 18px 16px rgb(51 36 29 / 16%)); }
+.branch--r { right: -1.5vw; transform-origin: 100% 60%; }
+.branch--l { left: -1.5vw; transform-origin: 0% 60%; }
+.branch--l img { transform: scaleX(-1); }
+.branch--back { z-index: 0; }
+.branch--front { z-index: 5; }
+.branch--front img { filter: drop-shadow(0 26px 22px rgb(51 36 29 / 22%)); }
 @media (max-width: 700px) {
-  .branch--front { filter: blur(3px); opacity: .6; }
-  .branch--mid { opacity: .55; }
+  .branch { width: var(--wm); }
+  /* On a phone the hero text sits low, so branches stay behind the content there. */
+  .branch--front { z-index: 0; }
 }
 section, .marquee { position: relative; z-index: 1; }
 
@@ -330,39 +334,61 @@ section, .marquee { position: relative; z-index: 1; }
   .fact:first-child { padding-left: 0; }
 }
 
-/* ---------- Plans: horizontal scroll ---------- */
-.plans { background: var(--washi); }
+/* ---------- Plans: carousel ---------- */
 .plans:focus { outline: none; }
-.plans-pin { position: relative; padding: clamp(72px, 10vw, 120px) 0 60px; overflow: clip; }
-.plans-track {
-  display: flex; align-items: stretch; gap: 20px;
-  padding: 0 var(--gutter);
-  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.plans-track::-webkit-scrollbar { display: none; }
-.plans-divider, .plan { flex: none; scroll-snap-align: start; scroll-margin-left: var(--gutter); }
+.plans-inner { position: relative; padding: clamp(96px, 13vw, 180px) 0 clamp(72px, 10vw, 140px); }
 .plans-intro {
   display: flex; flex-direction: column; gap: 22px; align-items: flex-start;
-  width: min(100% - 2 * var(--gutter), var(--max)); margin: 0 auto 48px;
+  width: min(100% - 2 * var(--gutter), var(--max)); margin: 0 auto clamp(40px, 6vw, 72px);
 }
 .plans-lead { max-width: 34ch; font-size: 1.08rem; color: var(--ink-2); }
-.plans-hint { display: inline-flex; align-items: center; gap: 12px; font-size: .78rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
-.plans-hint i { position: relative; width: 64px; height: 1px; background: var(--line-strong); overflow: hidden; }
-.plans-hint i::after { content: ""; position: absolute; inset: 0; background: var(--ink); animation: hint 2s var(--ease-io) infinite; }
-@keyframes hint { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 
-.plans-divider {
-  width: min(70vw, 340px); display: flex; flex-direction: column; justify-content: flex-end; gap: 18px;
-  padding: 28px 8px 28px 0; border-left: 1px solid var(--line); padding-left: 28px;
+/* Shared rail. Without JS it is a native swipe row; with JS the active card sits in the centre. */
+.rail { position: relative; min-width: 0; }
+.rail-viewport {
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 12px var(--gutter) 28px;
 }
-.plans-divider .kanji { font-size: clamp(6rem, 14vw, 11rem); line-height: 1; color: var(--sakura); }
-.plans-divider p { display: grid; gap: 4px; color: var(--ink-2); }
-.plans-divider b { font: 500 2.4rem/1 var(--display); color: var(--ink); }
+.rail-viewport::-webkit-scrollbar { display: none; }
+.rail.ready .rail-viewport { overflow: clip; scroll-snap-type: none; padding-inline: 0; touch-action: pan-y pinch-zoom; cursor: grab; }
+.rail-viewport.dragging { cursor: grabbing; user-select: none; }
+.rail-track { display: flex; align-items: stretch; gap: clamp(14px, 2vw, 28px); will-change: transform; }
+.rail-card { flex: 0 0 min(86vw, 440px); scroll-snap-align: center; transform-origin: 50% 40%; transition: box-shadow .6s var(--ease), border-color .6s; }
+.rail-card.active { box-shadow: 0 30px 60px -36px rgb(51 36 29 / 45%); border-color: rgb(162 52 75 / 30%); }
+.rail-controls {
+  display: none; align-items: center; justify-content: center; gap: 14px;
+  width: min(100% - 2 * var(--gutter), 640px); margin: 8px auto 0;
+}
+.rail.ready .rail-controls { display: flex; }
+.rail-arrow {
+  display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%;
+  border: 1px solid var(--line-strong); font-size: 1.2rem;
+  transition: background-color .4s, color .4s, border-color .4s;
+}
+.rail-arrow:hover { background: var(--ink); color: var(--washi); border-color: var(--ink); }
+.rail-arrow:active { scale: .94; }
+/* Pill dots after the 21st.dev "Testimonial Carousel": the active dot stretches into a pill. */
+.rail-dots { display: flex; align-items: center; }
+.rail-dot { display: grid; place-items: center; width: 22px; height: 44px; }
+.rail-dot::before {
+  content: ""; width: 7px; height: 7px; border-radius: 999px; background: rgb(51 36 29 / 25%);
+  transition: width .5s var(--ease), background-color .3s;
+}
+.rail-dot:hover::before { background: rgb(51 36 29 / 50%); }
+.rail-dot[aria-current="true"] { width: 38px; }
+.rail-dot[aria-current="true"]::before { width: 26px; background: var(--rose); }
+.rail-progress { display: none; }
+.rail-position { min-width: 4.5ch; text-align: right; font-size: .9rem; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  .rail-controls { gap: 6px; }
+  .rail-dot { width: 16px; }
+  .rail-dot[aria-current="true"] { width: 32px; }
+  .rail-arrow { width: 48px; height: 48px; }
+}
 
 .plan {
-  position: relative; width: min(86vw, 430px); display: flex; flex-direction: column; gap: 22px;
-  padding: clamp(24px, 3vw, 36px); padding-right: clamp(44px, 5vw, 60px);
+  position: relative; display: flex; flex-direction: column; gap: 16px;
+  padding: clamp(24px, 3vw, 32px); padding-right: clamp(44px, 5vw, 56px);
   background: var(--washi-3); border: 1px solid var(--line); border-radius: 26px;
   overflow: hidden; isolation: isolate;
 }
@@ -406,55 +432,11 @@ section, .marquee { position: relative; z-index: 1; }
 .plan-cta:hover { background: var(--rose); }
 .plan-cta span { transition: transform .5s var(--ease); }
 .plan-cta:hover span { transform: translate(3px, -3px); }
-.plans-progress { width: min(100% - 2 * var(--gutter), var(--max)); height: 2px; margin: 40px auto 0; background: var(--line); }
-@media (max-width: 899px) {
-  .plans-track { flex-direction: column; overflow: visible; scroll-snap-type: none; gap: 18px; }
-  .plan { width: 100%; max-width: 560px; }
-  .plans-divider {
-    width: 100%; flex-direction: row; align-items: center; gap: 18px;
-    border-left: 0; border-top: 1px solid var(--line); padding: 28px 0 10px;
-  }
-  .plans-divider:not(:first-child) { margin-top: 36px; }
-  .plans-divider .kanji { font-size: 4.6rem; }
-  .plans-hint, .plans-progress { display: none; }
+.plan-kanji {
+  position: absolute; z-index: -1; right: -6px; bottom: 70px;
+  font-size: clamp(6rem, 10vw, 8.5rem); line-height: 1; color: var(--sakura); opacity: .35; pointer-events: none;
 }
-.plans-progress span { display: block; height: 100%; background: var(--rose); transform-origin: left; transform: scaleX(0); }
-
-@media (min-width: 900px) {
-  .plans-pin { height: 100vh; height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: var(--header-h) 0 0; }
-  .plans-track {
-    --intro-left: max(var(--gutter), (100vw - var(--max)) / 2);
-    --intro-w: min(40vw, 540px);
-    position: relative; z-index: 1;
-    overflow: visible; scroll-snap-type: none; gap: 28px;
-    padding-left: calc(var(--intro-left) + var(--intro-w) + 48px); padding-right: 12vw; will-change: transform;
-  }
-  .plans-intro {
-    position: absolute; top: var(--header-h); bottom: 0; margin: 0; justify-content: center;
-    left: max(var(--gutter), (100vw - var(--max)) / 2); width: min(40vw, 540px);
-  }
-  .plan { width: 440px; gap: 14px; padding: 28px 52px 26px 30px; }
-  .plan-title { font-size: 2.5rem; }
-  .plan-title span { display: inline; }
-  .plan-tag { padding-top: 12px; font-size: .94rem; }
-  .plan-list { gap: 9px; }
-  .plan-list li { grid-template-columns: 34px 1fr; gap: 12px; }
-  .plan-list svg { width: 34px; height: 34px; padding: 7px; }
-  .plan-list span { font-size: .88rem; }
-  .plan-box { padding: 14px 16px; }
-  .plan-box-label { margin-bottom: 10px; }
-  .plan-levels { gap: 8px; }
-  .plan-perks { gap: 10px; }
-  .plan-perks svg { width: 24px; height: 24px; }
-  .plan-perks li { gap: 4px; font-size: .8rem; }
-  .plan-note { font-size: .86rem; }
-  .plan-cta { min-height: 50px; }
-  .plans-progress { margin-top: 28px; }
-}
-@media (min-width: 900px) and (max-height: 760px) {
-  .plan-tag, .plan-brand { display: none; }
-  .plan { gap: 10px; padding-block: 22px; }
-}
+.plan-title span { display: inline; }
 
 /* ---------- Sensei ---------- */
 .sensei { padding: clamp(110px, 16vw, 220px) 0 clamp(80px, 12vw, 160px); }
@@ -510,7 +492,7 @@ section, .marquee { position: relative; z-index: 1; }
 }
 
 /* ---------- Reviews: two marquees ---------- */
-.reviews { padding: clamp(80px, 12vw, 160px) 0 clamp(100px, 14vw, 180px); background: var(--washi-2); }
+.reviews { padding: clamp(80px, 12vw, 160px) 0 clamp(100px, 14vw, 180px); background: rgb(236 210 179 / 55%); }
 .reviews-head { display: grid; gap: 22px; justify-items: start; margin-bottom: clamp(48px, 7vw, 90px); }
 .review-rows { display: grid; gap: 20px; }
 .review-row { overflow: clip; }
@@ -573,6 +555,6 @@ section, .marquee { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .js .loader, .petals, .js .cursor { display: none; }
   .branch { will-change: auto; }
-  .scroll-cue i::after, .plans-hint i::after { animation: none; }
+  .scroll-cue i::after { animation: none; }
   *, *::before, *::after { transition-duration: .01ms !important; }
 }
