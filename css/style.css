@@ -147,7 +147,8 @@ em { font-style: normal; color: var(--rose); }
 }
 
 /* ---------- Petals and cursor ---------- */
-.petals { position: fixed; inset: 0; z-index: 60; width: 100%; height: 100%; pointer-events: none; }
+/* Petals fall only over the first screen. */
+.petals { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
 .cursor { display: none; }
 @media (hover: hover) and (pointer: fine) {
   .js .cursor {
@@ -235,16 +236,18 @@ main:focus { outline: none; }
   will-change: transform; user-select: none;
 }
 .branch img { width: 100%; height: auto; filter: drop-shadow(0 18px 16px rgb(51 36 29 / 16%)); }
-.branch--r { right: -1.5vw; transform-origin: 100% 60%; }
-.branch--l { left: -1.5vw; transform-origin: 0% 60%; }
+/* --oy is the height where the trunk meets the edge, so the branch sways around its own trunk. */
+.branch--r { right: -2vw; transform-origin: 100% var(--oy, 60%); }
+.branch--l { left: -2vw; transform-origin: 0% var(--oy, 60%); }
 .branch--l img { transform: scaleX(-1); }
-.branch--back { z-index: 0; }
-.branch--front { z-index: 5; }
-.branch--front img { filter: drop-shadow(0 26px 22px rgb(51 36 29 / 22%)); }
+.branch--back { z-index: 0; opacity: .85; }
+/* Foreground branches pass over the content, like walking under a tree. */
+.branch--front { z-index: 6; }
+.branch--front img { filter: drop-shadow(0 22px 18px rgb(51 36 29 / 24%)) drop-shadow(0 4px 4px rgb(51 36 29 / 12%)); }
 @media (max-width: 700px) {
   .branch { width: var(--wm); }
-  /* On a phone the hero text sits low, so branches stay behind the content there. */
-  .branch--front { z-index: 0; }
+  /* On a phone the hero text sits low, so the first screen stays above the branches. */
+  .hero { z-index: 7; }
 }
 section, .marquee { position: relative; z-index: 1; }
 
@@ -306,7 +309,8 @@ section, .marquee { position: relative; z-index: 1; }
   padding: clamp(18px, 3vw, 30px) 0; overflow: clip; white-space: nowrap;
   border-block: 1px solid var(--line); background: var(--washi);
 }
-.marquee-track { display: flex; width: max-content; will-change: transform; }
+.marquee-track { display: flex; width: max-content; will-change: transform; animation: marquee var(--marquee-dur, 32s) linear infinite; }
+@keyframes marquee { to { transform: translateX(-50%); } }
 .marquee-group { display: flex; align-items: center; gap: clamp(20px, 3vw, 44px); padding-right: clamp(20px, 3vw, 44px); }
 .marquee-group span { font: 500 clamp(2rem, 5vw, 4.4rem)/1 var(--display); letter-spacing: -.01em; }
 .marquee-group span[lang="ja"] { color: var(--rose); }
@@ -556,5 +560,8 @@ section, .marquee { position: relative; z-index: 1; }
   .js .loader, .petals, .js .cursor { display: none; }
   .branch { will-change: auto; }
   .scroll-cue i::after { animation: none; }
+  .marquee-track { animation: none; width: auto; }
+  .marquee-group { flex-wrap: wrap; justify-content: center; row-gap: 10px; padding-inline: var(--gutter); }
+  .marquee-group + .marquee-group { display: none; }
   *, *::before, *::after { transition-duration: .01ms !important; }
 }

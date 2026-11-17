@@ -57,7 +57,6 @@
     <p class="loader-count"><span data-count>0</span>%</p>
   </div>
 
-  <canvas class="petals" aria-hidden="true"></canvas>
   <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-label"></span></div>
 
   <header class="site-header">
@@ -97,18 +96,18 @@
   <main id="main" tabindex="-1">
     <!-- Sakura and plum branches grow in from both screen edges and sway in the scroll wind. -->
     <div class="grove" aria-hidden="true">
-      <div class="branch branch--r branch--front" style="--top:3%; --w:46vw; --wm:82vw" data-speed="1.1"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--front" style="--top:9%; --w:40vw; --wm:74vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:19%; --w:36vw; --wm:70vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:25%; --w:34vw; --wm:66vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:35%; --w:42vw; --wm:78vw" data-speed="0.8"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:42%; --w:38vw; --wm:72vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:52%; --w:34vw; --wm:68vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:58%; --w:36vw; --wm:70vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:68%; --w:40vw; --wm:76vw" data-speed="0.8"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:75%; --w:38vw; --wm:72vw" data-speed="0.9"><img src="assets/sakura-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:85%; --w:34vw; --wm:68vw" data-speed="0.7"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:91%; --w:36vw; --wm:70vw" data-speed="0.8"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--front" style="--top:7%; --w:44vw; --wm:80vw; --oy:38%" data-speed="1.5"><img src="assets/branch-1.webp" width="685" height="300" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--front" style="--top:15%; --w:40vw; --wm:76vw; --oy:11%" data-speed="1.7"><img src="assets/branch-2.webp" width="637" height="246" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:22%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--front" style="--top:28%; --w:44vw; --wm:80vw; --oy:54%" data-speed="1.6"><img src="assets/branch-3.webp" width="635" height="280" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--front" style="--top:37%; --w:42vw; --wm:78vw; --oy:32%" data-speed="1.8"><img src="assets/branch-4.webp" width="668" height="340" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:45%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--front" style="--top:52%; --w:44vw; --wm:80vw; --oy:11%" data-speed="1.5"><img src="assets/branch-2.webp" width="637" height="246" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--front" style="--top:60%; --w:42vw; --wm:78vw; --oy:38%" data-speed="1.7"><img src="assets/branch-1.webp" width="685" height="300" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--back" style="--top:67%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--front" style="--top:74%; --w:44vw; --wm:80vw; --oy:32%" data-speed="1.6"><img src="assets/branch-4.webp" width="668" height="340" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--r branch--front" style="--top:82%; --w:42vw; --wm:78vw; --oy:54%" data-speed="1.8"><img src="assets/branch-3.webp" width="635" height="280" alt="" loading="lazy" decoding="async"></div>
+      <div class="branch branch--l branch--back" style="--top:90%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
     </div>
 
     <section class="hero" id="home" tabindex="-1" aria-labelledby="hero-title">
@@ -117,6 +116,7 @@
           sizes="100vw" width="1600" height="900" alt="" fetchpriority="high" decoding="async">
       </div>
       <div class="hero-veil" aria-hidden="true"></div>
+      <canvas class="petals" aria-hidden="true"></canvas>
       <div class="hero-content">
         <p class="eyebrow hero-eyebrow"><span lang="ja">日本語学校</span> · онлайн-школа японского</p>
         <h1 class="hero-title" id="hero-title" data-split>Научим говорить <em>по-японски</em></h1>

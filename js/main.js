@@ -155,58 +155,48 @@
       .to('.hero-content', { yPercent: -10, autoAlpha: 0.2, ease: 'none' }, 0);
   });
 
-  /* ---------- Grove: branches grow in from the edges and sway in the scroll wind ---------- */
+  /* ---------- Grove: walking under the tree ---------- */
+  // Foreground branches move faster than the page and grow a little as they pass, so they read as
+  // close to the camera; background branches drift slowly behind the content.
+  const scrollVelocity = () => (lenis && Number.isFinite(lenis.velocity) ? lenis.velocity : 0);
   const branches = qa('.branch');
   branches.forEach(branch => {
     const speed = parseFloat(branch.dataset.speed) || 0.7;
+    const front = branch.classList.contains('branch--front');
     const fromRight = branch.classList.contains('branch--r');
-    // Slow parallax drift while the branch is on screen.
-    gsap.fromTo(branch,
-      { y: () => innerHeight * speed * 0.35 },
-      {
-        y: () => -innerHeight * speed * 0.35,
-        ease: 'none',
-        scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true }
-      });
-    // Grows out of the screen edge as it enters.
-    gsap.fromTo(branch, { xPercent: fromRight ? 55 : -55 }, {
-      xPercent: 0,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'top 45%', scrub: 0.6 }
-    });
+    const travel = front ? 0.45 : 0.3;
+    // One trigger per branch: parallax and scale run across the whole pass, the growth out of
+    // the edge happens in the first third. Separate triggers would measure each other's offsets.
+    gsap.timeline({
+      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: 0.9, invalidateOnRefresh: true }
+    })
+      .fromTo(branch,
+        { y: () => innerHeight * speed * travel, scale: front ? 0.9 : 1 },
+        { y: () => -innerHeight * speed * travel, scale: front ? 1.14 : 1, ease: 'none', duration: 1 }, 0)
+      .fromTo(branch,
+        { xPercent: fromRight ? 60 : -60 },
+        { xPercent: 0, ease: 'power2.out', duration: 0.35 }, 0);
   });
 
-  // Wind: a slow idle sway plus a gust that follows scroll speed. Each branch pivots at the screen edge.
+  // Wind: a slow idle sway plus a gust that follows scroll speed. Each branch pivots at its trunk.
   let gust = 0;
   gsap.ticker.add(time => {
-    const velocity = lenis ? lenis.velocity : 0;
-    gust += (Math.max(-8, Math.min(8, velocity * 0.3)) - gust) * 0.05;
+    gust += (Math.max(-7, Math.min(7, scrollVelocity() * 0.3)) - gust) * 0.05;
     branches.forEach((branch, index) => {
       const side = branch.classList.contains('branch--r') ? 1 : -1;
-      const idle = Math.sin(time * (0.55 + (index % 3) * 0.12) + index * 1.7) * 1.8;
+      const idle = Math.sin(time * (0.5 + (index % 3) * 0.12) + index * 1.7) * 1.6;
       gsap.set(branch, { rotation: side * (idle + gust * (0.5 + (index % 4) * 0.12)) });
     });
   });
 
-  /* ---------- Marquee follows scroll speed and direction ---------- */
+  /* ---------- Marquee: a CSS loop that speeds up while scrolling ---------- */
   const marqueeTrack = q('.marquee-track');
-  if (marqueeTrack) {
-    const group = q('.marquee-group', marqueeTrack);
-    let width = group.offsetWidth;
-    let offset = 0;
-    let direction = 1;
-    let boost = 0;
-    new ResizeObserver(() => { width = group.offsetWidth; }).observe(group);
-    const skew = gsap.quickTo(marqueeTrack, 'skewX', { duration: 0.5, ease: 'power3.out' });
-    gsap.ticker.add((time, delta) => {
-      const velocity = lenis ? lenis.velocity : 0;
-      if (Math.abs(velocity) > 0.5) direction = Math.sign(velocity);
-      boost += (Math.min(Math.abs(velocity) * 0.6, 14) - boost) * 0.08;
-      offset -= direction * (1 + boost) * delta * 0.06;
-      if (offset <= -width) offset += width;
-      if (offset > 0) offset -= width;
-      marqueeTrack.style.transform = `translate3d(${offset}px, 0, 0)`;
-      skew(Math.max(-8, Math.min(8, -velocity * 0.25)));
+  const marqueeLoop = marqueeTrack?.getAnimations ? marqueeTrack.getAnimations()[0] : null;
+  if (marqueeLoop) {
+    let rate = 1;
+    gsap.ticker.add(() => {
+      rate += (1 + Math.min(Math.abs(scrollVelocity()) * 0.08, 3) - rate) * 0.08;
+      marqueeLoop.playbackRate = rate;
     });
   }
 
@@ -391,8 +381,8 @@
 
     function resize() {
       const ratio = Math.min(devicePixelRatio || 1, 2);
-      width = innerWidth;
-      height = innerHeight;
+      width = canvas.clientWidth || innerWidth;
+      height = canvas.clientHeight || innerHeight;
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -445,12 +435,17 @@
       while (sprites.length && sprites.length < 4) sprites.push(sprites[0]);
     });
 
+    let heroVisible = true;
     resize();
-    window.addEventListener('resize', resize);
+    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+    else window.addEventListener('resize', resize);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => { heroVisible = entries[0].isIntersecting; }).observe(canvas);
+    }
     gsap.ticker.add((time, delta) => {
-      if (document.hidden || !sprites.length) return;
+      if (document.hidden || !sprites.length || !heroVisible) return;
       const step = Math.min(delta, 50) / 16.7;
-      const velocity = scroller ? scroller.velocity : 0;
+      const velocity = scroller && Number.isFinite(scroller.velocity) ? scroller.velocity : 0;
       wind += (velocity - wind) * 0.06;
       context.clearRect(0, 0, width, height);
       petals.sort((a, b) => a.depth - b.depth);
