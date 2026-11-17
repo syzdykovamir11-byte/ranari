@@ -11,6 +11,10 @@
   setupReviews();
   setupMenu();
   setupLiquidGlass();
+  // The menu panel is hidden at load, so its map is drawn the first time it opens.
+  window.addEventListener('ranari:menu-open', () => {
+    requestAnimationFrame(() => setupLiquidGlass(q('.menu-panel'), q('#menu-glass-filter feImage'), 32));
+  }, { once: true });
 
   if (reduce || !hasGsap) {
     loader?.remove();
@@ -87,13 +91,13 @@
   /* ---------- Loader and hero intro ---------- */
   const heroImage = q('.hero-media img');
   gsap.set(heroWords, { yPercent: 115 });
-  gsap.set(['.hero-eyebrow', '.hero-sub', '.hero-actions', '.scroll-cue'], { y: 30, autoAlpha: 0 });
+  gsap.set(['.hero-sub', '.hero-actions', '.scroll-cue'], { y: 30, autoAlpha: 0 });
   gsap.set(header, { y: -30, autoAlpha: 0 });
 
   function heroIntro() {
     gsap.fromTo(heroImage, { scale: 1.32 }, { scale: 1, duration: 2.4 });
     gsap.to(heroWords, { yPercent: 0, duration: 1.5, stagger: 0.09, delay: 0.05 });
-    gsap.to(['.hero-eyebrow', '.hero-sub', '.hero-actions', '.scroll-cue'], { y: 0, autoAlpha: 1, stagger: 0.08, delay: 0.45 });
+    gsap.to(['.hero-sub', '.hero-actions', '.scroll-cue'], { y: 0, autoAlpha: 1, stagger: 0.08, delay: 0.45 });
     gsap.to(header, { y: 0, autoAlpha: 1, delay: 0.6, clearProps: 'transform,opacity,visibility' });
   }
 
@@ -511,9 +515,7 @@
 
   // Liquid glass: Chromium can refract the backdrop through an SVG filter. The displacement map is
   // drawn for the pill's real size: neutral grey inside, edges push the backdrop along the normal.
-  function setupLiquidGlass() {
-    const glass = q('.nav-glass');
-    const image = q('#nav-glass-filter feImage');
+  function setupLiquidGlass(glass = q('.nav-glass'), image = q('#nav-glass-filter feImage'), radius = null) {
     const chromium = !!(navigator.userAgentData && navigator.userAgentData.brands &&
       navigator.userAgentData.brands.some(brand => /Chromium|Google Chrome|Microsoft Edge|Opera/.test(brand.brand)));
     if (!glass || !image || !chromium) return;
@@ -522,16 +524,16 @@
     let lastKey = '';
 
     function draw() {
-      const box = glass.getBoundingClientRect();
-      const w = Math.max(2, Math.round(box.width / 2));
-      const h = Math.max(2, Math.round(box.height / 2));
+      // Layout size, not the transformed box, so an opening animation does not distort the map.
+      const w = Math.max(2, Math.round(glass.offsetWidth / 2));
+      const h = Math.max(2, Math.round(glass.offsetHeight / 2));
       const key = `${w}x${h}`;
       if (key === lastKey) return;
       lastKey = key;
       canvas.width = w;
       canvas.height = h;
       const data = context.createImageData(w, h);
-      const r = h / 2;
+      const r = radius === null ? h / 2 : Math.min(h / 2, w / 2, radius / 2);
       const band = Math.min(h * 0.42, 14);
       const cx = w / 2;
       const cy = h / 2;
@@ -595,19 +597,23 @@
   function setupMenu() {
     const toggle = q('.menu-toggle');
     const menu = q('#menu');
+    const panel = q('.menu-panel', menu);
     const inertTargets = [q('main'), q('.site-footer')];
     let open = false;
 
-    toggle.addEventListener('click', () => (open ? closeMenu(true) : openMenu()));
+    // event.detail is 0 when a button is activated from the keyboard.
+    toggle.addEventListener('click', event => (open ? closeMenu(true) : openMenu(event.detail === 0)));
     menu.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(true); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && open) closeMenu(true); });
     menu.addEventListener('click', event => {
+      // A tap on the dimmed area outside the panel closes the menu.
+      if (!event.target.closest('.menu-panel')) { closeMenu(false); return; }
       const link = event.target.closest('a[href^="#"]');
       if (link && !window.ranariLenis) closeMenu(false);
     });
     matchMedia('(min-width: 1000px)').addEventListener('change', event => { if (event.matches) closeMenu(false); });
 
-    function openMenu() {
+    function openMenu(fromKeyboard) {
       open = true;
       menu.hidden = false;
       toggle.setAttribute('aria-expanded', 'true');
@@ -615,15 +621,16 @@
       document.documentElement.classList.add('menu-open');
       inertTargets.forEach(element => { if (element) element.inert = true; });
       window.ranariLenis?.stop();
+      window.dispatchEvent(new Event('ranari:menu-open'));
       if (window.gsap && !reduce) {
-        gsap.killTweensOf(menu);
-        gsap.to(menu, { clipPath: 'circle(150% at calc(100% - 44px) 44px)', duration: 1, ease: 'expo.inOut' });
-        gsap.fromTo(qa('.menu-nav a', menu), { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: 0.06, duration: 1, delay: 0.35, ease: 'expo.out' });
-        gsap.fromTo('.menu-branch', { x: 120, rotation: 10 }, { x: 0, rotation: 0, duration: 1.8, delay: 0.2, ease: 'expo.out' });
-      } else {
-        menu.style.clipPath = 'none';
+        gsap.killTweensOf([menu, panel]);
+        gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' });
+        gsap.fromTo(panel, { scale: 0.86, y: -14, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.7, ease: 'expo.out' });
+        gsap.fromTo(qa('.menu-nav a, .menu-cta, .menu-insta', menu), { y: 16, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.04, duration: 0.7, delay: 0.08, ease: 'expo.out' });
       }
-      q('a', menu).focus({ preventScroll: true });
+      // Keyboard users land on the first link; a tap focuses the menu itself, so no focus ring shows.
+      if (fromKeyboard) q('a', menu).focus({ preventScroll: true });
+      else menu.focus({ preventScroll: true });
     }
 
     window.closeRanariMenu = (returnFocus) => {
@@ -636,8 +643,9 @@
       window.ranariLenis?.start();
       const finish = () => { menu.hidden = true; };
       if (window.gsap && !reduce) {
-        gsap.killTweensOf(menu);
-        gsap.to(menu, { clipPath: 'circle(0% at calc(100% - 44px) 44px)', duration: 0.8, ease: 'expo.inOut', onComplete: finish });
+        gsap.killTweensOf([menu, panel]);
+        gsap.to(panel, { scale: 0.9, y: -10, opacity: 0, duration: 0.35, ease: 'power2.in' });
+        gsap.to(menu, { opacity: 0, duration: 0.35, ease: 'power2.in', onComplete: finish });
       } else {
         finish();
       }

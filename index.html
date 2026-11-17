@@ -99,19 +99,37 @@
     </div>
   </header>
 
-  <div class="menu" id="menu" hidden>
-    <img class="menu-branch" src="assets/branch-1.webp" width="685" height="300" alt="" aria-hidden="true">
-    <nav class="menu-nav" aria-label="Меню">
-      <a href="#home"><span>01</span>Главная</a>
-      <a href="#plans"><span>02</span>Тарифы</a>
-      <a href="#sensei"><span>03</span>Sensei</a>
-      <a href="#results"><span>04</span>JLPT</a>
-      <a href="#reviews"><span>05</span>Отзывы</a>
-    </nav>
-    <div class="menu-foot">
-      <a class="menu-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener"><svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.7 9.7 0 0 0-8.3 14.8L2.4 21.6l4.8-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.2-.2-.5-.3Z"/></svg>Записаться в WhatsApp <span aria-hidden="true">↗</span></a>
-      <a class="link" href="https://www.instagram.com/ranari_education/" target="_blank" rel="noopener">@ranari_education ↗</a>
+  <div class="menu" id="menu" tabindex="-1" hidden>
+    <div class="menu-panel">
+      <svg class="glass-filter" aria-hidden="true" focusable="false"><defs>
+        <filter id="menu-glass-filter" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">
+          <feImage x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" href=""/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispRed" scale="-20" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispGreen" scale="-24" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="green"/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispBlue" scale="-28" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"/>
+          <feBlend in="red" in2="green" mode="screen" result="rg"/>
+          <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+          <feGaussianBlur in="output" stdDeviation="3"/>
+        </filter>
+      </defs></svg>
+      <nav class="menu-nav" aria-label="Меню">
+        <a href="#home">Главная<span class="menu-arrow" aria-hidden="true">→</span></a>
+        <a href="#plans">Тарифы<span class="menu-arrow" aria-hidden="true">→</span></a>
+        <a href="#sensei">Sensei<span class="menu-arrow" aria-hidden="true">→</span></a>
+        <a href="#results">JLPT<span class="menu-arrow" aria-hidden="true">→</span></a>
+        <a href="#reviews">Отзывы<span class="menu-arrow" aria-hidden="true">→</span></a>
+      </nav>
+      <a class="menu-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener">
+        <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.7 9.7 0 0 0-8.3 14.8L2.4 21.6l4.8-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.2-.2-.5-.3Z"/></svg>
+        <span class="menu-cta-text"><b>Записаться на занятие</b><small>WhatsApp</small></span>
+        <span class="menu-cta-arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="menu-insta" href="https://www.instagram.com/ranari_education/" target="_blank" rel="noopener">@ranari_education ↗</a>
     </div>
+  </div>
   </div>
   </div>
 
@@ -136,7 +154,6 @@
       <div class="hero-veil" aria-hidden="true"></div>
       <canvas class="petals" aria-hidden="true"></canvas>
       <div class="hero-content">
-        <p class="eyebrow hero-eyebrow"><span lang="ja">日本語学校</span> · онлайн-школа японского</p>
         <h1 class="hero-title" id="hero-title" data-split>Научим говорить <em>по-японски</em></h1>
         <div class="hero-bottom">
           <p class="hero-sub">Онлайн-занятия и подготовка к JLPT&nbsp;N5–N1.</p>
@@ -168,9 +185,8 @@
       </div>
     </div>
 
-    <section class="intro" id="about" aria-labelledby="intro-title">
+    <section class="intro" id="about" aria-label="О школе">
       <div class="wrap">
-        <p class="eyebrow" id="intro-title"><span class="dot"></span>О школе</p>
         <p class="intro-text" data-words>RANARI — онлайн-школа японского языка. Учим говорить по-японски и готовим к JLPT от N5 до N1: в группе или индивидуально, по методике основательницы школы, выпускницы Osaka University.</p>
         <dl class="facts">
           <div class="fact" data-reveal>
@@ -196,7 +212,6 @@
     <section class="plans" id="plans" tabindex="-1" aria-labelledby="plans-title">
       <div class="plans-inner">
           <div class="plans-intro">
-            <p class="eyebrow"><span class="dot"></span>Форматы обучения</p>
             <h2 class="display" id="plans-title" data-split>Тарифы</h2>
             <p class="plans-lead">Группы открываются по мере набора. Индивидуальные программы подбираем под вашу цель.</p>
             <a class="link" href="https://wa.me/c/77085453459" target="_blank" rel="noopener">Каталог в WhatsApp <span aria-hidden="true">↗</span></a>
@@ -356,7 +371,6 @@
     <section class="sensei" id="sensei" tabindex="-1" aria-labelledby="sensei-title">
       <div class="wrap">
         <div class="sensei-head">
-          <p class="eyebrow"><span class="dot"></span>Преподаватели японского</p>
           <h2 class="display" id="sensei-title" data-split>Sensei</h2>
         </div>
 
@@ -394,7 +408,6 @@
     <section class="results" id="results" tabindex="-1" aria-labelledby="jlpt-title">
       <div class="wrap">
         <div class="results-head">
-          <p class="eyebrow"><span class="dot"></span>Экзамен по японскому</p>
           <h2 class="display" id="jlpt-title" data-split>Результаты JLPT</h2>
           <p class="results-intro" data-reveal>Как ученики RANARI готовились к экзамену по японскому и сдавали его.</p>
         </div>
@@ -402,7 +415,6 @@
           <article class="stack-card" style="--i:0">
             <span class="stack-level" aria-hidden="true">N4</span>
             <div class="stack-body">
-              <p class="stack-index">01 / 03</p>
               <h3>С нуля до N4</h3>
               <p>Ученик в 11 лет прошёл путь с нуля до N4 за шесть месяцев.</p>
             </div>
@@ -410,7 +422,6 @@
           <article class="stack-card" style="--i:1">
             <span class="stack-level" aria-hidden="true">N3</span>
             <div class="stack-body">
-              <p class="stack-index">02 / 03</p>
               <h3>N3 с первой попытки</h3>
               <p>Ученик прошёл семимесячный курс и сдал экзамен с первой попытки.</p>
             </div>
@@ -418,7 +429,6 @@
           <article class="stack-card" style="--i:2">
             <span class="stack-level" aria-hidden="true">N1</span>
             <div class="stack-body">
-              <p class="stack-index">03 / 03</p>
               <h3>Высший уровень JLPT</h3>
               <p>Ученик сдал N1 после интенсивной подготовки.</p>
             </div>
@@ -429,7 +439,6 @@
 
     <section class="reviews" id="reviews" tabindex="-1" aria-labelledby="reviews-title">
       <div class="wrap reviews-head">
-        <p class="eyebrow"><span class="dot"></span>Что говорят ученики</p>
         <h2 class="display" id="reviews-title" data-split>Отзывы</h2>
         <a class="link" href="https://www.instagram.com/stories/highlights/18345958105213280/" target="_blank" rel="noopener">Отзывы в Instagram <span aria-hidden="true">↗</span></a>
       </div>
@@ -456,7 +465,6 @@
 
   <footer class="site-footer" id="contact">
     <div class="wrap footer-top">
-      <p class="eyebrow"><span class="dot"></span>Запись на занятия</p>
       <h2 class="footer-title" data-split>Начнём говорить <em>по-японски?</em></h2>
       <a class="cta-orb" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" data-magnetic data-cursor="Написать">
         <span>Написать<br>в WhatsApp</span><i aria-hidden="true">↗</i>
