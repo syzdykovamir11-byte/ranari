@@ -60,26 +60,47 @@
   <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-label"></span></div>
 
   <header class="site-header">
-    <a class="brand" href="#home" aria-label="RANARI education, на главную">
-      <b>RANARI</b><small>education</small>
-    </a>
-    <nav class="desktop-nav" aria-label="Разделы сайта">
-      <a href="#plans">Тарифы</a>
-      <a href="#sensei">Sensei</a>
-      <a href="#results">JLPT</a>
-      <a href="#reviews">Отзывы</a>
-    </nav>
-    <div class="header-end">
-      <a class="pill" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" data-magnetic>Записаться <span aria-hidden="true">↗</span></a>
-      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
-        <span class="menu-toggle-label">Меню</span>
-        <span class="menu-toggle-lines" aria-hidden="true"><i></i><i></i></span>
-      </button>
+    <div class="nav-glass">
+      <svg class="glass-filter" aria-hidden="true" focusable="false"><defs>
+        <filter id="nav-glass-filter" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">
+          <feImage x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" href=""/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispRed" scale="-20" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispGreen" scale="-24" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="green"/>
+          <feDisplacementMap in="SourceGraphic" in2="map" result="dispBlue" scale="-28" xChannelSelector="R" yChannelSelector="G"/>
+          <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"/>
+          <feBlend in="red" in2="green" mode="screen" result="rg"/>
+          <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+          <feGaussianBlur in="output" stdDeviation="3"/>
+        </filter>
+      </defs></svg>
+      <a class="brand" href="#home" aria-label="RANARI education, на главную">
+        <b>RANARI</b><small>education</small>
+      </a>
+      <nav class="desktop-nav" aria-label="Разделы сайта">
+        <span class="nav-indicator" aria-hidden="true"></span>
+        <a class="nav-link" href="#plans"><span class="swap"><span class="swap-a">Тарифы</span><span class="swap-b" aria-hidden="true">Тарифы</span></span></a>
+        <a class="nav-link" href="#sensei"><span class="swap"><span class="swap-a">Sensei</span><span class="swap-b" aria-hidden="true">Sensei</span></span></a>
+        <a class="nav-link" href="#results"><span class="swap"><span class="swap-a">JLPT</span><span class="swap-b" aria-hidden="true">JLPT</span></span></a>
+        <a class="nav-link" href="#reviews"><span class="swap"><span class="swap-a">Отзывы</span><span class="swap-b" aria-hidden="true">Отзывы</span></span></a>
+      </nav>
+      <div class="header-end">
+        <a class="nav-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" data-magnetic>
+          <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.7 9.7 0 0 0-8.3 14.8L2.4 21.6l4.8-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.2-.2-.5-.3Z"/></svg>
+          <span class="swap"><span class="swap-a">Записаться</span><span class="swap-b" aria-hidden="true">Записаться</span></span>
+          <span class="nav-cta-arrow" aria-hidden="true">↗</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
+          <span class="menu-toggle-lines" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
+      <span class="nav-progress" aria-hidden="true"></span>
     </div>
   </header>
 
   <div class="menu" id="menu" hidden>
-    <img class="menu-branch" src="assets/sakura-branch.png" width="720" height="360" alt="" aria-hidden="true">
+    <img class="menu-branch" src="assets/branch-1.webp" width="685" height="300" alt="" aria-hidden="true">
     <nav class="menu-nav" aria-label="Меню">
       <a href="#home"><span>01</span>Главная</a>
       <a href="#plans"><span>02</span>Тарифы</a>
@@ -88,9 +109,10 @@
       <a href="#reviews"><span>05</span>Отзывы</a>
     </nav>
     <div class="menu-foot">
-      <a href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener">WhatsApp ↗</a>
-      <a href="https://www.instagram.com/ranari_education/" target="_blank" rel="noopener">@ranari_education ↗</a>
+      <a class="menu-cta" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener"><svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.7 9.7 0 0 0-8.3 14.8L2.4 21.6l4.8-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.2-.2-.5-.3Z"/></svg>Записаться в WhatsApp <span aria-hidden="true">↗</span></a>
+      <a class="link" href="https://www.instagram.com/ranari_education/" target="_blank" rel="noopener">@ranari_education ↗</a>
     </div>
+  </div>
   </div>
 
   <main id="main" tabindex="-1">
@@ -98,16 +120,12 @@
     <div class="grove" aria-hidden="true">
       <div class="branch branch--r branch--front" style="--top:7%; --w:44vw; --wm:80vw; --oy:38%" data-speed="1.5"><img src="assets/branch-1.webp" width="685" height="300" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--l branch--front" style="--top:15%; --w:40vw; --wm:76vw; --oy:11%" data-speed="1.7"><img src="assets/branch-2.webp" width="637" height="246" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:22%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--l branch--front" style="--top:28%; --w:44vw; --wm:80vw; --oy:54%" data-speed="1.6"><img src="assets/branch-3.webp" width="635" height="280" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--r branch--front" style="--top:37%; --w:42vw; --wm:78vw; --oy:32%" data-speed="1.8"><img src="assets/branch-4.webp" width="668" height="340" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:45%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--r branch--front" style="--top:52%; --w:44vw; --wm:80vw; --oy:11%" data-speed="1.5"><img src="assets/branch-2.webp" width="637" height="246" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--l branch--front" style="--top:60%; --w:42vw; --wm:78vw; --oy:38%" data-speed="1.7"><img src="assets/branch-1.webp" width="685" height="300" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--r branch--back" style="--top:67%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--l branch--front" style="--top:74%; --w:44vw; --wm:80vw; --oy:32%" data-speed="1.6"><img src="assets/branch-4.webp" width="668" height="340" alt="" loading="lazy" decoding="async"></div>
       <div class="branch branch--r branch--front" style="--top:82%; --w:42vw; --wm:78vw; --oy:54%" data-speed="1.8"><img src="assets/branch-3.webp" width="635" height="280" alt="" loading="lazy" decoding="async"></div>
-      <div class="branch branch--l branch--back" style="--top:90%; --w:30vw; --wm:60vw" data-speed="0.6"><img src="assets/plum-branch.png" width="720" height="360" alt="" loading="lazy" decoding="async"></div>
     </div>
 
     <section class="hero" id="home" tabindex="-1" aria-labelledby="hero-title">
@@ -437,7 +455,6 @@
   </main>
 
   <footer class="site-footer" id="contact">
-    <img class="footer-branch" src="assets/sakura-branch.png" width="720" height="360" alt="" aria-hidden="true" loading="lazy">
     <div class="wrap footer-top">
       <p class="eyebrow"><span class="dot"></span>Запись на занятия</p>
       <h2 class="footer-title" data-split>Начнём говорить <em>по-японски?</em></h2>

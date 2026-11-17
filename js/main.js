@@ -10,6 +10,7 @@
   if (typeof window.setupCarousel === 'function') document.querySelectorAll('[data-rail]').forEach(window.setupCarousel);
   setupReviews();
   setupMenu();
+  setupLiquidGlass();
 
   if (reduce || !hasGsap) {
     loader?.remove();
@@ -287,12 +288,6 @@
     ease: 'none',
     scrollTrigger: { trigger: '.wordmark', start: 'top bottom', end: 'bottom bottom', scrub: true }
   });
-  gsap.fromTo('.footer-branch', { y: 120, rotation: -8 }, {
-    y: -60,
-    rotation: 0,
-    ease: 'none',
-    scrollTrigger: { trigger: '.site-footer', start: 'top bottom', end: 'bottom bottom', scrub: true }
-  });
   gsap.from('.cta-orb', { scale: 0, rotation: -90, duration: 1.6, scrollTrigger: { trigger: '.cta-orb', start: 'top 92%' } });
 
   /* ---------- Header, cursor, magnetic buttons, petals ---------- */
@@ -465,19 +460,122 @@
   }
 
   /* ---------- Shared helpers that also run without motion ---------- */
+  // The header never hides. It tints a little after the hero, turns dark over the footer,
+  // shows reading progress and marks the section in view.
   function setupHeader(scroller) {
-    let last = window.scrollY;
+    const footer = q('.site-footer');
+    const nav = q('.desktop-nav');
+    const indicator = q('.nav-indicator');
+    const links = qa('.nav-link');
+    const sections = links.map(link => document.getElementById(link.getAttribute('href').slice(1)));
+    const progressBar = q('.nav-progress');
+    let active = null;
+
+    function moveIndicator(link) {
+      if (!indicator) return;
+      if (!link) { indicator.style.opacity = '0'; return; }
+      indicator.style.width = `${link.offsetWidth}px`;
+      indicator.style.transform = `translateX(${link.offsetLeft}px)`;
+      indicator.style.opacity = '1';
+    }
+
     const update = () => {
       const y = window.scrollY;
-      const past = y > innerHeight * 0.6;
-      header.classList.toggle('is-solid', past);
-      header.classList.toggle('is-hidden', past && y > last + 2 && !document.documentElement.classList.contains('menu-open'));
-      if (y < last - 2) header.classList.remove('is-hidden');
-      last = y;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      header.classList.toggle('is-scrolled', y > innerHeight * 0.5);
+      const headerBottom = header.getBoundingClientRect().bottom;
+      header.classList.toggle('on-dark', footer ? footer.getBoundingClientRect().top < headerBottom : false);
+      if (progressBar) progressBar.style.setProperty('--progress', max > 0 ? String(Math.min(1, y / max)) : '0');
+      // The section whose top has passed a line a third of the way down the screen.
+      const line = innerHeight * 0.35;
+      let current = null;
+      sections.forEach((section, index) => {
+        if (section && section.getBoundingClientRect().top <= line && section.getBoundingClientRect().bottom > line) current = links[index];
+      });
+      if (current !== active) {
+        links.forEach(link => {
+          const on = link === current;
+          link.classList.toggle('is-active', on);
+          if (on) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
+        });
+        active = current;
+        moveIndicator(active);
+      }
     };
     if (scroller) scroller.on('scroll', update);
     else window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', () => { moveIndicator(active); update(); });
+    if (nav) nav.addEventListener('mouseleave', () => moveIndicator(active));
     update();
+  }
+
+  // Liquid glass: Chromium can refract the backdrop through an SVG filter. The displacement map is
+  // drawn for the pill's real size: neutral grey inside, edges push the backdrop along the normal.
+  function setupLiquidGlass() {
+    const glass = q('.nav-glass');
+    const image = q('#nav-glass-filter feImage');
+    const chromium = !!(navigator.userAgentData && navigator.userAgentData.brands &&
+      navigator.userAgentData.brands.some(brand => /Chromium|Google Chrome|Microsoft Edge|Opera/.test(brand.brand)));
+    if (!glass || !image || !chromium) return;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    let lastKey = '';
+
+    function draw() {
+      const box = glass.getBoundingClientRect();
+      const w = Math.max(2, Math.round(box.width / 2));
+      const h = Math.max(2, Math.round(box.height / 2));
+      const key = `${w}x${h}`;
+      if (key === lastKey) return;
+      lastKey = key;
+      canvas.width = w;
+      canvas.height = h;
+      const data = context.createImageData(w, h);
+      const r = h / 2;
+      const band = Math.min(h * 0.42, 14);
+      const cx = w / 2;
+      const cy = h / 2;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const px = x + 0.5 - cx;
+          const py = y + 0.5 - cy;
+          const qx = Math.abs(px) - (w / 2 - r);
+          const qy = Math.abs(py) - (h / 2 - r);
+          const ox = Math.max(qx, 0);
+          const oy = Math.max(qy, 0);
+          const outside = Math.hypot(ox, oy);
+          const sdf = outside + Math.min(Math.max(qx, qy), 0) - r;
+          const depth = -sdf;
+          let dx = 0;
+          let dy = 0;
+          if (depth > 0 && depth < band) {
+            let nx;
+            let ny;
+            if (qx > 0 && qy > 0) { nx = ox / (outside || 1); ny = oy / (outside || 1); }
+            else if (qx > qy) { nx = 1; ny = 0; }
+            else { nx = 0; ny = 1; }
+            nx *= Math.sign(px) || 1;
+            ny *= Math.sign(py) || 1;
+            const t = 1 - depth / band;
+            const strength = t * t;
+            dx = nx * strength;
+            dy = ny * strength;
+          }
+          const i = (y * w + x) * 4;
+          data.data[i] = Math.round(128 + dx * 127);
+          data.data[i + 1] = Math.round(128 + dy * 127);
+          data.data[i + 2] = 128;
+          data.data[i + 3] = 255;
+        }
+      }
+      context.putImageData(data, 0, 0);
+      image.setAttribute('href', canvas.toDataURL());
+    }
+
+    draw();
+    document.documentElement.classList.add('liquid');
+    if ('ResizeObserver' in window) new ResizeObserver(draw).observe(glass);
+    else window.addEventListener('resize', draw);
   }
 
   function setupReviews() {
@@ -497,7 +595,6 @@
   function setupMenu() {
     const toggle = q('.menu-toggle');
     const menu = q('#menu');
-    const label = q('.menu-toggle-label', toggle);
     const inertTargets = [q('main'), q('.site-footer')];
     let open = false;
 
@@ -514,13 +611,13 @@
       open = true;
       menu.hidden = false;
       toggle.setAttribute('aria-expanded', 'true');
-      label.textContent = 'Закрыть';
+      toggle.setAttribute('aria-label', 'Закрыть меню');
       document.documentElement.classList.add('menu-open');
       inertTargets.forEach(element => { if (element) element.inert = true; });
       window.ranariLenis?.stop();
       if (window.gsap && !reduce) {
         gsap.killTweensOf(menu);
-        gsap.to(menu, { clipPath: 'circle(150% at calc(100% - 48px) 38px)', duration: 1, ease: 'expo.inOut' });
+        gsap.to(menu, { clipPath: 'circle(150% at calc(100% - 44px) 44px)', duration: 1, ease: 'expo.inOut' });
         gsap.fromTo(qa('.menu-nav a', menu), { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: 0.06, duration: 1, delay: 0.35, ease: 'expo.out' });
         gsap.fromTo('.menu-branch', { x: 120, rotation: 10 }, { x: 0, rotation: 0, duration: 1.8, delay: 0.2, ease: 'expo.out' });
       } else {
@@ -533,14 +630,14 @@
       if (!open) return;
       open = false;
       toggle.setAttribute('aria-expanded', 'false');
-      label.textContent = 'Меню';
+      toggle.setAttribute('aria-label', 'Открыть меню');
       document.documentElement.classList.remove('menu-open');
       inertTargets.forEach(element => { if (element) element.inert = false; });
       window.ranariLenis?.start();
       const finish = () => { menu.hidden = true; };
       if (window.gsap && !reduce) {
         gsap.killTweensOf(menu);
-        gsap.to(menu, { clipPath: 'circle(0% at calc(100% - 48px) 38px)', duration: 0.8, ease: 'expo.inOut', onComplete: finish });
+        gsap.to(menu, { clipPath: 'circle(0% at calc(100% - 44px) 44px)', duration: 0.8, ease: 'expo.inOut', onComplete: finish });
       } else {
         finish();
       }
