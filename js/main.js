@@ -11,8 +11,7 @@
   setupReviews();
   setupMenu();
   setupDeck();
-  setupLadder();
-  setupPlansIndex();
+  setupFooterWord();
   setupLiquidGlass();
   // The menu panel is hidden at load, so its map is drawn the first time it opens.
   window.addEventListener('ranari:menu-open', () => {
@@ -22,6 +21,8 @@
   if (reduce || !hasGsap) {
     loader?.remove();
     setupHeader(null);
+    if (typeof window.setupLed === 'function') window.setupLed(q('[data-led]'), null, null, true);
+    qa('.intro-text').forEach(el => el.classList.add('static'));
     return;
   }
 
@@ -200,16 +201,9 @@
     });
   });
 
-  /* ---------- Marquee: a CSS loop that speeds up while scrolling ---------- */
-  const marqueeTrack = q('.marquee-track');
-  const marqueeLoop = marqueeTrack?.getAnimations ? marqueeTrack.getAnimations()[0] : null;
-  if (marqueeLoop) {
-    let rate = 1;
-    gsap.ticker.add(() => {
-      rate += (1 + Math.min(Math.abs(scrollVelocity()) * 0.08, 3) - rate) * 0.08;
-      marqueeLoop.playbackRate = rate;
-    });
-  }
+  /* ---------- LED sign: scrolls faster while the page scrolls ---------- */
+  if (typeof window.setupLed === 'function') window.setupLed(q('[data-led]'), scrollVelocity, gsap.ticker, false);
+  gsap.from('.led-screen', { y: 60, rotationX: -25, autoAlpha: 0, duration: 1.4, scrollTrigger: { trigger: '.led', start: 'top 92%' } });
 
   /* ---------- Headings, reveals, words, counters ---------- */
   splitHeadings.forEach(([element, words]) => {
@@ -235,11 +229,11 @@
     });
   });
 
-  // Pictures set into the intro sentence pop open as the reader reaches them.
-  qa('.intro .chip').forEach(chip => {
-    gsap.from(chip, {
-      scale: 0, rotation: -14, duration: 1.1, ease: 'back.out(1.8)',
-      scrollTrigger: { trigger: chip, start: 'top 70%' }
+  // Key phrases in the intro get a marker stroke drawn under them as they are read.
+  qa('.intro-text mark').forEach(mark => {
+    gsap.fromTo(mark, { '--mark': '0%' }, {
+      '--mark': '100%', ease: 'none',
+      scrollTrigger: { trigger: mark, start: 'top 72%', end: 'top 48%', scrub: true }
     });
   });
 
@@ -277,20 +271,38 @@
     y: 30, autoAlpha: 0, delay: 0.4, scrollTrigger: { trigger: '.plans-rail', start: 'top 85%' }
   });
 
-  /* ---------- Sensei: the deck rises in, its back card fans out after ---------- */
-  // The cards' own transforms hold the fan, so the whole deck is animated instead.
+  /* ---------- Sensei: the deck rises in, the heading decodes, the kanji is inked ---------- */
   if (q('.deck')) {
     gsap.from('.deck', {
       y: 120, rotation: 6, autoAlpha: 0, duration: 1.6,
       scrollTrigger: { trigger: '.deck', start: 'top 85%' }
     });
   }
-
-  /* ---------- Results: the scale slides in, stories rise ---------- */
-  gsap.from('.ladder-scale', { y: 40, autoAlpha: 0, duration: 1.4, scrollTrigger: { trigger: '.ladder', start: 'top 85%' } });
-  qa('.story').forEach(story => {
-    gsap.from(story.children, { y: 60, duration: 1.4, stagger: 0.08, scrollTrigger: { trigger: story, start: 'top 75%' } });
+  const senseiWord = q('.scramble');
+  if (senseiWord) ScrollTrigger.create({ trigger: senseiWord, start: 'top 85%', once: true, onEnter: () => scramble(senseiWord, senseiWord.dataset.scramble, 1.4) });
+  gsap.from('.sensei-ruby', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.6, scrollTrigger: { trigger: '.sensei-title', start: 'top 85%' } });
+  gsap.fromTo('.sensei-big', { '--ink-cut': '100%' }, {
+    '--ink-cut': '0%', ease: 'none',
+    scrollTrigger: { trigger: '.sensei-title', start: 'top 90%', end: 'bottom 45%', scrub: true }
   });
+
+  /* ---------- Results: the stamp lands, then the certificates fly off one by one ---------- */
+  gsap.from('.pass-stamp', {
+    scale: 2.6, rotation: 18, autoAlpha: 0, duration: 0.7, ease: 'power4.in',
+    scrollTrigger: { trigger: '.results-head', start: 'top 70%' }
+  });
+  setupCertificates();
+
+  /* ---------- Reviews: the speech bubble draws itself ---------- */
+  const bubble = q('.bubble path');
+  if (bubble) {
+    const length = bubble.getTotalLength();
+    gsap.fromTo(bubble, { strokeDasharray: length, strokeDashoffset: length }, {
+      strokeDashoffset: 0, ease: 'none',
+      scrollTrigger: { trigger: '.reviews-title', start: 'top 85%', end: 'bottom 50%', scrub: true }
+    });
+    gsap.from('.reviews-tag', { y: 20, autoAlpha: 0, duration: 1.2, scrollTrigger: { trigger: '.reviews-title', start: 'top 60%' } });
+  }
 
   /* ---------- Footer ---------- */
   gsap.from('.wordmark span', {
@@ -300,6 +312,62 @@
     scrollTrigger: { trigger: '.wordmark', start: 'top bottom', end: 'bottom bottom', scrub: true }
   });
   gsap.from('.cta-orb', { scale: 0, rotation: -90, duration: 1.6, scrollTrigger: { trigger: '.cta-orb', start: 'top 92%' } });
+
+  // After the deck pattern from 21st.dev ("Stacked Deck Scroll Reveal"): the section pins, the
+  // certificates rise into a stack, then the front one flies off and the next moves up.
+  // The JLPT scale above fills to the level of the certificate in front.
+  function setupCertificates() {
+    const root = q('[data-certs]');
+    if (!root) return;
+    const certs = qa('.cert', root);
+    const levels = qa('.ladder-scale li[data-level]', root);
+    const fill = q('.ladder-fill', root);
+    if (!certs.length) return;
+    root.classList.add('is-pinned');
+    const peek = () => (innerWidth < 700 ? 14 : 22);
+    const pose = index => ({ y: index * peek(), scale: 1 - index * 0.045 });
+    const markLevel = index => {
+      const level = Number(certs[Math.max(0, Math.min(certs.length - 1, index))].dataset.level);
+      levels.forEach(item => {
+        const value = Number(item.dataset.level);
+        item.classList.toggle('is-reached', value >= level);
+        item.classList.toggle('is-current', value === level);
+      });
+      gsap.to(fill, { scaleX: (5 - level) / 4, duration: 0.8, ease: 'power3.out', overwrite: true });
+    };
+    certs.forEach((cert, index) => gsap.set(cert, { zIndex: certs.length - index, transformOrigin: '50% 0%' }));
+    let flyAt = Infinity;
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: () => `+=${certs.length * innerHeight * 0.9}`,
+        pin: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const flown = Math.floor(self.progress * timeline.duration() - flyAt + 0.5);
+          markLevel(Number.isFinite(flown) ? Math.max(0, flown) : 0);
+        }
+      }
+    });
+    certs.forEach((cert, index) => {
+      timeline.fromTo(cert,
+        { y: () => innerHeight * 0.6 + index * peek(), scale: pose(index).scale * 0.92, rotation: index % 2 ? 4 : -4 },
+        { y: () => pose(index).y, scale: pose(index).scale, rotation: 0, ease: 'power3.out', duration: 1 }, index * 0.08);
+    });
+    timeline.to({}, { duration: 0.3 });
+    flyAt = timeline.duration();
+    certs.slice(0, -1).forEach((cert, index) => {
+      const at = flyAt + index;
+      timeline.to(cert, { y: () => -innerHeight * 1.1, rotation: index % 2 ? 18 : -22, scale: 0.94, ease: 'power1.in', duration: 1 }, at);
+      timeline.to(certs.slice(index + 1), {
+        y: i => pose(i).y, scale: i => pose(i).scale, ease: 'none', duration: 1
+      }, at);
+    });
+    timeline.to({}, { duration: 0.4 });
+    markLevel(0);
+  }
 
   /* ---------- Header, cursor, magnetic buttons, petals ---------- */
   setupHeader(lenis);
@@ -564,70 +632,64 @@
     layout();
   }
 
-  // The JLPT scale follows the stories: the story in the middle of the screen marks its level,
-  // the fill climbs from N5 to it, and every level a student passed gets a blossom.
-  function setupLadder() {
-    const ladder = q('[data-ladder]');
-    if (!ladder) return;
-    const stories = qa('.story', ladder);
-    const levels = qa('.ladder-scale li[data-level]', ladder);
-    const fill = q('.ladder-fill', ladder);
-    const reached = new Set();
-    const vertical = matchMedia('(min-width: 900px)');
-
-    function mark(level) {
-      if (level) stories.forEach(story => {
-        const storyLevel = Number(story.dataset.level);
-        if (storyLevel >= level) reached.add(storyLevel);
-      });
-      stories.forEach(story => story.classList.toggle('is-active', Number(story.dataset.level) === level));
-      levels.forEach(item => {
-        const value = Number(item.dataset.level);
-        item.classList.toggle('is-reached', Boolean(level) && value >= level);
-        item.classList.toggle('is-current', value === level);
-        item.classList.toggle('is-passed', reached.has(value) && value >= (level || 6));
-      });
-      const progress = level ? (5 - level) / 4 : 0;
-      fill.style.transform = vertical.matches ? `scaleY(${progress})` : `scaleX(${progress})`;
-      fill.style.transition = 'transform 1s cubic-bezier(.22, 1, .36, 1)';
-    }
-
-    let current = 0;
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) { current = Number(entry.target.dataset.level); mark(current); }
-        });
-      }, { rootMargin: '-45% 0px -45% 0px' });
-      stories.forEach(story => observer.observe(story));
-    } else {
-      stories.forEach(story => story.classList.add('is-active'));
-    }
-    vertical.addEventListener?.('change', () => mark(current));
-    mark(0);
+  // Letters run through random kana before settling on the target word.
+  function scramble(element, target, seconds = 1) {
+    const glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン';
+    const start = performance.now();
+    const total = seconds * 1000;
+    const chars = [...target];
+    const tick = now => {
+      const progress = Math.min(1, (now - start) / total);
+      const settled = Math.floor(progress * chars.length);
+      element.innerHTML = chars.map((ch, i) => {
+        if (i < settled || ch === ' ') return ch;
+        return `<span class="sc">${glyphs[Math.floor(Math.random() * glyphs.length)]}</span>`;
+      }).join('');
+      if (progress < 1) requestAnimationFrame(tick);
+      else element.textContent = target;
+    };
+    requestAnimationFrame(tick);
   }
 
-  // The list of plan names above the carousel selects a card and follows the carousel.
-  function setupPlansIndex() {
-    const rail = q('.plans-rail');
-    const buttons = qa('.plans-index [data-plan]');
-    if (!rail || !buttons.length) return;
-    const show = index => {
-      buttons.forEach((button, i) => button.setAttribute('aria-current', String(i === index)));
-      const active = buttons[index];
-      const row = active?.closest('.plans-index');
-      if (row && row.scrollWidth > row.clientWidth) {
-        row.scrollTo({ left: active.offsetLeft - row.clientWidth / 2 + active.offsetWidth / 2, behavior: reduce ? 'auto' : 'smooth' });
-      }
-    };
-    buttons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        if (typeof rail.railSelect === 'function') rail.railSelect(index);
-        else show(index);
+  // The closing line: the last word keeps switching language with a scramble, and on a mouse
+  // the letters of "Начнём говорить" grow heavier as the cursor comes near.
+  function setupFooterWord() {
+    const word = q('[data-cycle]');
+    const line = q('[data-proximity]');
+    if (word && !reduce) {
+      const options = word.dataset.cycle.split('|');
+      let index = 0;
+      let visible = false;
+      if ('IntersectionObserver' in window) new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(word);
+      setInterval(() => {
+        if (!visible || document.hidden) return;
+        index = (index + 1) % options.length;
+        word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(options[index]));
+        scramble(word, options[index], 0.9);
+      }, 2800);
+    }
+    if (line && finePointer && !reduce) {
+      // Letters are wrapped per word so a word never breaks across lines.
+      line.innerHTML = line.textContent.split(' ').map(w => `<span class="wrd">${[...w].map(ch => `<span class="ch">${ch}</span>`).join('')}</span>`).join(' ');
+      const letters = qa('.ch', line);
+      let frame = null;
+      let pointer = null;
+      const paint = () => {
+        frame = null;
+        letters.forEach(letter => {
+          const box = letter.getBoundingClientRect();
+          const distance = pointer ? Math.hypot(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2)) : 9999;
+          const weight = 400 + 300 * Math.max(0, 1 - distance / 260);
+          letter.style.setProperty('--w', weight.toFixed(0));
+        });
+      };
+      const footer = q('.site-footer');
+      footer?.addEventListener('pointermove', event => {
+        pointer = { x: event.clientX, y: event.clientY };
+        if (!frame) frame = requestAnimationFrame(paint);
       });
-    });
-    rail.addEventListener('rail:change', event => show(event.detail.index));
-    show(0);
+      footer?.addEventListener('pointerleave', () => { pointer = null; if (!frame) frame = requestAnimationFrame(paint); });
+    }
   }
 
   function setupMenu() {
