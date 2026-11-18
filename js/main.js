@@ -23,12 +23,14 @@
   }
 
   gsap.registerPlugin(ScrollTrigger);
+  // The phone address bar resizes the viewport while scrolling; re-measuring then made branches jump.
+  ScrollTrigger.config({ ignoreMobileResize: true });
   gsap.defaults({ ease: 'expo.out', duration: 1.2 });
 
   /* ---------- Smooth scroll ---------- */
   let lenis = null;
   if (typeof window.Lenis !== 'undefined') {
-    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 1, smoothWheel: true });
+    lenis = new Lenis({ lerp: 0.07, wheelMultiplier: 0.9, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(time => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -169,18 +171,20 @@
     const speed = parseFloat(branch.dataset.speed) || 0.7;
     const front = branch.classList.contains('branch--front');
     const fromRight = branch.classList.contains('branch--r');
-    const travel = front ? 0.45 : 0.3;
+    const travel = front ? 0.26 : 0.18;
     // One trigger per branch: parallax and scale run across the whole pass, the growth out of
-    // the edge happens in the first third. Separate triggers would measure each other's offsets.
+    // the edge and the fade-in take the first half. Separate triggers would measure each other's offsets.
+    // A long scrub lets the branch catch up with the page softly instead of snapping to it.
     gsap.timeline({
-      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: 0.9, invalidateOnRefresh: true }
+      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: 1.8, invalidateOnRefresh: true }
     })
       .fromTo(branch,
-        { y: () => innerHeight * speed * travel, scale: front ? 0.9 : 1 },
-        { y: () => -innerHeight * speed * travel, scale: front ? 1.14 : 1, ease: 'none', duration: 1 }, 0)
+        { y: () => innerHeight * speed * travel, scale: front ? 0.94 : 1 },
+        { y: () => -innerHeight * speed * travel, scale: front ? 1.08 : 1, ease: 'none', duration: 1 }, 0)
       .fromTo(branch,
-        { xPercent: fromRight ? 60 : -60 },
-        { xPercent: 0, ease: 'power2.out', duration: 0.35 }, 0);
+        { xPercent: fromRight ? 45 : -45 },
+        { xPercent: 0, ease: 'sine.out', duration: 0.5 }, 0)
+      .fromTo(branch, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'sine.inOut', duration: 0.22 }, 0);
   });
 
   // Wind: a slow idle sway plus a gust that follows scroll speed. Each branch pivots at its trunk.
@@ -300,7 +304,7 @@
     setupCursor();
     setupMagnetic();
   }
-  setupPetals(lenis);
+  if (typeof window.setupPetals === 'function') window.setupPetals(q('.petals'), lenis, gsap.ticker);
 
   if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener('load', () => ScrollTrigger.refresh());
@@ -333,132 +337,6 @@
       });
       element.addEventListener('pointerleave', () => {
         gsap.to(element, { x: 0, y: 0, duration: 1.1, ease: 'elastic.out(1, .4)' });
-      });
-    });
-  }
-
-  // Real petal photos tumble in 3D: two rotation axes are projected onto the canvas,
-  // the back of a petal reads paler, and near petals are larger, faster and softly blurred.
-  function setupPetals(scroller) {
-    const canvas = q('.petals');
-    if (!canvas || !canvas.getContext) return;
-    const context = canvas.getContext('2d');
-    const sources = ['p1', 'p2', 'p3', 'p4'].map(name => {
-      const image = new Image();
-      image.src = `assets/petals/${name}.png`;
-      return image;
-    });
-    const sprites = [];
-    const petals = [];
-    let width = 0;
-    let height = 0;
-    let wind = 0;
-
-    function makeSprite(image) {
-      const front = document.createElement('canvas');
-      front.width = image.naturalWidth;
-      front.height = image.naturalHeight;
-      front.getContext('2d').drawImage(image, 0, 0);
-      // The underside of a petal is lighter and less saturated.
-      const back = document.createElement('canvas');
-      back.width = front.width;
-      back.height = front.height;
-      const backContext = back.getContext('2d');
-      backContext.drawImage(image, 0, 0);
-      backContext.globalCompositeOperation = 'source-atop';
-      backContext.fillStyle = 'rgba(255, 236, 238, .42)';
-      backContext.fillRect(0, 0, back.width, back.height);
-      // A softened copy for petals close to the camera.
-      const near = document.createElement('canvas');
-      near.width = front.width;
-      near.height = front.height;
-      const nearContext = near.getContext('2d');
-      if ('filter' in nearContext) nearContext.filter = 'blur(2.5px)';
-      nearContext.drawImage(image, 0, 0);
-      return { front, back, near, ratio: front.height / front.width };
-    }
-
-    function resize() {
-      const ratio = Math.min(devicePixelRatio || 1, 2);
-      width = canvas.clientWidth || innerWidth;
-      height = canvas.clientHeight || innerHeight;
-      canvas.width = Math.round(width * ratio);
-      canvas.height = Math.round(height * ratio);
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const wanted = width < 700 ? 12 : 22;
-      while (petals.length < wanted) petals.push(spawn({}, true));
-      petals.length = wanted;
-    }
-
-    function spawn(petal, anywhere) {
-      const depth = Math.random();
-      petal.depth = depth;
-      petal.x = Math.random() * width;
-      petal.y = anywhere ? Math.random() * height : -60;
-      petal.size = 20 + depth * depth * 46;
-      petal.fall = 0.35 + depth * 0.9;
-      petal.drift = 0.15 + Math.random() * 0.5;
-      petal.angle = Math.random() * Math.PI * 2;
-      petal.spin = (Math.random() - 0.5) * 0.02;
-      petal.tiltX = Math.random() * Math.PI * 2;
-      petal.tiltY = Math.random() * Math.PI * 2;
-      petal.tiltXSpeed = 0.012 + Math.random() * 0.03;
-      petal.tiltYSpeed = 0.008 + Math.random() * 0.022;
-      petal.sway = Math.random() * Math.PI * 2;
-      petal.sprite = Math.floor(Math.random() * 4);
-      petal.alpha = 0.55 + depth * 0.45;
-      return petal;
-    }
-
-    function draw(petal) {
-      const sprite = sprites[petal.sprite];
-      if (!sprite) return;
-      const scaleX = Math.cos(petal.tiltY);
-      const scaleY = Math.cos(petal.tiltX);
-      const facing = scaleX * scaleY;
-      const w = petal.size;
-      const h = petal.size * sprite.ratio;
-      const image = petal.depth > 0.86 ? sprite.near : facing < 0 ? sprite.back : sprite.front;
-      context.save();
-      context.translate(petal.x, petal.y);
-      context.rotate(petal.angle);
-      context.scale(Math.sign(scaleX || 1) * Math.max(0.12, Math.abs(scaleX)), Math.max(0.12, Math.abs(scaleY)));
-      // Edge-on petals catch less light.
-      context.globalAlpha = petal.alpha * (0.7 + 0.3 * Math.abs(facing));
-      context.drawImage(image, -w / 2, -h / 2, w, h);
-      context.restore();
-    }
-
-    Promise.all(sources.map(image => (image.decode ? image.decode().catch(() => {}) : Promise.resolve()))).then(() => {
-      sources.forEach(image => { if (image.naturalWidth) sprites.push(makeSprite(image)); });
-      while (sprites.length && sprites.length < 4) sprites.push(sprites[0]);
-    });
-
-    let heroVisible = true;
-    resize();
-    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
-    else window.addEventListener('resize', resize);
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(entries => { heroVisible = entries[0].isIntersecting; }).observe(canvas);
-    }
-    gsap.ticker.add((time, delta) => {
-      if (document.hidden || !sprites.length || !heroVisible) return;
-      const step = Math.min(delta, 50) / 16.7;
-      const velocity = scroller && Number.isFinite(scroller.velocity) ? scroller.velocity : 0;
-      wind += (velocity - wind) * 0.06;
-      context.clearRect(0, 0, width, height);
-      petals.sort((a, b) => a.depth - b.depth);
-      petals.forEach(petal => {
-        petal.sway += 0.018 * step;
-        petal.tiltX += petal.tiltXSpeed * step;
-        petal.tiltY += petal.tiltYSpeed * step;
-        petal.angle += petal.spin * step;
-        petal.x += (petal.drift + Math.sin(petal.sway) * (0.4 + petal.depth * 0.6)) * step;
-        petal.y += (petal.fall - wind * (0.15 + petal.depth * 0.35)) * step;
-        if (petal.y > height + 60) spawn(petal, false);
-        if (petal.y < -80) { spawn(petal, false); petal.y = height + 50; }
-        if (petal.x > width + 60) petal.x = -40;
-        draw(petal);
       });
     });
   }

@@ -367,10 +367,11 @@ main:focus { outline: none; }
 .grove { position: absolute; inset: 0; pointer-events: none; overflow: clip; }
 /* The thick end of the branch sits just past the screen edge, so it reads as growing out of the device. */
 .branch {
-  position: absolute; top: var(--top); width: var(--w); min-width: 260px; max-width: 760px;
+  position: absolute; top: var(--top); width: var(--w); min-width: 275px; max-width: 800px;
   will-change: transform; user-select: none;
 }
-.branch img { width: 100%; height: auto; filter: drop-shadow(0 18px 16px rgb(51 36 29 / 16%)); }
+/* The shadow is baked into the images: a CSS drop-shadow on a moving layer drew a grey box on iOS. */
+.branch img { width: 100%; height: auto; }
 /* --oy is the height where the trunk meets the edge, so the branch sways around its own trunk. */
 .branch--r { right: -2vw; transform-origin: 100% var(--oy, 60%); }
 .branch--l { left: -2vw; transform-origin: 0% var(--oy, 60%); }
@@ -378,7 +379,6 @@ main:focus { outline: none; }
 .branch--back { z-index: 0; opacity: .85; }
 /* Foreground branches pass over the content, like walking under a tree. */
 .branch--front { z-index: 6; }
-.branch--front img { filter: drop-shadow(0 22px 18px rgb(51 36 29 / 24%)) drop-shadow(0 4px 4px rgb(51 36 29 / 12%)); }
 @media (max-width: 700px) {
   .branch { width: var(--wm); }
   /* Fewer branches on phones, but they stay in front of the content like on desktop. */
