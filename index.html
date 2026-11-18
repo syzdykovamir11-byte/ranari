@@ -23,7 +23,6 @@
   <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/carousel.js" defer></script>
   <script src="js/petals.js" defer></script>
-  <script src="js/led.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
@@ -169,16 +168,26 @@
       <div class="scroll-cue" aria-hidden="true"><span>Листайте</span><i></i></div>
     </section>
 
-    <div class="led" data-led>
-      <div class="led-screen">
-        <canvas class="led-canvas" aria-hidden="true"></canvas>
-        <p class="led-text">日本語 · Разговорный японский · JLPT N5–N1 · Группы и индивидуально · 夢</p>
+    <div class="led" data-led aria-label="Разговорный японский, JLPT N5–N1, группы и индивидуально">
+      <div class="led-frame">
+        <img class="led-art" src="assets/led-frame.webp" srcset="assets/led-frame-1024.webp 1024w, assets/led-frame.webp 2048w" sizes="(max-width: 1400px) 100vw, 1400px" width="2048" height="768" alt="" loading="lazy" decoding="async">
+        <div class="led-screen" aria-hidden="true">
+          <div class="led-track">
+            <div class="led-group"><span lang="ja">日本語</span><i>///</i><span>Разговорный японский</span><i>///</i><span>JLPT N5–N1</span><i>///</i><span>Группы и индивидуально</span><i>///</i><span lang="ja">夢</span><i>///</i></div>
+            <div class="led-group"><span lang="ja">日本語</span><i>///</i><span>Разговорный японский</span><i>///</i><span>JLPT N5–N1</span><i>///</i><span>Группы и индивидуально</span><i>///</i><span lang="ja">夢</span><i>///</i></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <section class="intro" id="about" aria-label="О школе">
       <div class="wrap">
-        <p class="intro-text" data-words><span class="il">RANARI — онлайн-школа японского языка.</span> <span class="il il--in">Учим <mark>говорить по-японски</mark></span> <span class="il">и готовим к <mark>JLPT от N5 до&nbsp;N1</mark>:</span> <span class="il il--in">в группе или индивидуально,</span> <span class="il">по методике основательницы школы,</span> <span class="il il--in">выпускницы <mark>Osaka University</mark>.</span></p>
+        <div class="intro-cards">
+          <p class="icard icard--lead" data-reveal>RANARI — онлайн-школа японского языка.</p>
+          <p class="icard icard--rose" data-reveal>Учим говорить по-японски и готовим к JLPT от N5 до N1.</p>
+          <p class="icard" data-reveal>В группе или индивидуально.</p>
+          <p class="icard icard--dark" data-reveal>По методике основательницы школы, выпускницы Osaka University.</p>
+        </div>
       </div>
       <div class="facts-strip" data-facts>
         <dl class="facts">
@@ -358,10 +367,10 @@
         <div class="sensei-head">
           <div class="sensei-title">
             <span class="sensei-ruby" lang="ja" aria-hidden="true">せんせい</span>
-            <h2 class="display" id="sensei-title"><span class="scramble" data-scramble="Sensei">Sensei</span></h2>
+            <h2 class="display" id="sensei-title" data-split>Sensei</h2>
             <span class="sensei-big" lang="ja" aria-hidden="true">先生</span>
           </div>
-          <p class="sensei-meaning"><span lang="ja">先生</span> — «рождённый раньше». Так в Японии обращаются к учителю.</p>
+          <p class="sensei-meaning">Основательница школы и носитель языка из Японии.</p>
           <div class="deck-controls">
             <button class="rail-arrow" type="button" data-deck-prev aria-label="Предыдущий преподаватель" data-magnetic><span aria-hidden="true">←</span></button>
             <button class="rail-arrow" type="button" data-deck-next aria-label="Следующий преподаватель" data-magnetic><span aria-hidden="true">→</span></button>
@@ -491,7 +500,7 @@
     <div class="wrap footer-top">
       <div class="footer-hook">
         <p class="footer-kicker" lang="ja">日本語がわかると夢はもっと近くなる。</p>
-        <h2 class="footer-title" aria-label="Начнём говорить по-японски?"><span class="ft-line" data-proximity aria-hidden="true">Начнём говорить</span> <em class="ft-swap" aria-hidden="true"><span class="ft-word" data-cycle="по-японски?|日本語で?|nihongo de?">по-японски?</span></em></h2>
+        <h2 class="footer-title" aria-label="Начнём говорить по-японски?"><span class="ft-line" aria-hidden="true">Начнём говорить</span> <em class="ft-swap" aria-hidden="true"><span class="ft-word" data-cycle="по-японски?|日本語で?|nihongo de?">по-японски?</span></em></h2>
       </div>
       <a class="cta-orb" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" data-magnetic data-cursor="Написать">
         <span>Написать<br>в WhatsApp</span><i aria-hidden="true">↗</i>

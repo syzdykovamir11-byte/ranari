@@ -21,8 +21,6 @@
   if (reduce || !hasGsap) {
     loader?.remove();
     setupHeader(null);
-    if (typeof window.setupLed === 'function') window.setupLed(q('[data-led]'), null, null, true);
-    qa('.intro-text').forEach(el => el.classList.add('static'));
     return;
   }
 
@@ -201,9 +199,27 @@
     });
   });
 
+  // Widths of text-driven animations (like the facts line) change once the web fonts arrive.
+  if (document.fonts?.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+
   /* ---------- LED sign: scrolls faster while the page scrolls ---------- */
-  if (typeof window.setupLed === 'function') window.setupLed(q('[data-led]'), scrollVelocity, gsap.ticker, false);
-  gsap.from('.led-screen', { y: 60, rotationX: -25, autoAlpha: 0, duration: 1.4, scrollTrigger: { trigger: '.led', start: 'top 92%' } });
+  const led = q('[data-led]');
+  const ledLoop = q('.led-track')?.getAnimations?.()[0];
+  if (led) {
+    // The neon frame flickers on when it comes into view.
+    ScrollTrigger.create({ trigger: led, start: 'top 75%', once: true, onEnter: () => led.classList.add('is-on') });
+    gsap.fromTo('.led-frame', { scale: 0.92, y: 40 }, {
+      scale: 1, y: 0, ease: 'none',
+      scrollTrigger: { trigger: led, start: 'top bottom', end: 'center center', scrub: 1 }
+    });
+  }
+  if (ledLoop) {
+    let rate = 1;
+    gsap.ticker.add(() => {
+      rate += (1 + Math.min(Math.abs(scrollVelocity()) * 0.08, 3) - rate) * 0.08;
+      ledLoop.playbackRate = rate;
+    });
+  }
 
   /* ---------- Headings, reveals, words, counters ---------- */
   splitHeadings.forEach(([element, words]) => {
@@ -229,27 +245,24 @@
     });
   });
 
-  // Key phrases in the intro get a marker stroke drawn under them as they are read.
-  qa('.intro-text mark').forEach(mark => {
-    gsap.fromTo(mark, { '--mark': '0%' }, {
-      '--mark': '100%', ease: 'none',
-      scrollTrigger: { trigger: mark, start: 'top 72%', end: 'top 48%', scrub: true }
-    });
-  });
-
   // The line of facts slides sideways with the scroll, like credits.
   const factsRow = q('.facts');
   if (factsRow) {
-    gsap.fromTo(factsRow, { x: () => innerWidth * 0.3 }, {
+    gsap.fromTo(factsRow, { x: () => innerWidth * 0.12 }, {
       x: () => -(factsRow.scrollWidth - innerWidth) - innerWidth * 0.04,
       ease: 'none',
-      scrollTrigger: { trigger: '.facts-strip', start: 'top bottom', end: 'bottom top', scrub: 1, invalidateOnRefresh: true }
+      // The whole line passes while the strip is still on screen, so it can be read to the end.
+      scrollTrigger: { trigger: '.facts-strip', start: 'top 95%', end: 'top 15%', scrub: 0.6, invalidateOnRefresh: true }
     });
   }
 
   qa('[data-counter]').forEach(element => {
     const target = Number(element.dataset.counter);
     const state = { value: 0 };
+    // Reserve the final width so lines measured before the count (the facts strip) stay right.
+    element.style.display = 'inline-block';
+    element.style.minWidth = `${String(target).length}ch`;
+    element.style.textAlign = 'right';
     element.textContent = '0';
     gsap.to(state, {
       value: target,
@@ -278,12 +291,10 @@
       scrollTrigger: { trigger: '.deck', start: 'top 85%' }
     });
   }
-  const senseiWord = q('.scramble');
-  if (senseiWord) ScrollTrigger.create({ trigger: senseiWord, start: 'top 85%', once: true, onEnter: () => scramble(senseiWord, senseiWord.dataset.scramble, 1.4) });
   gsap.from('.sensei-ruby', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.6, scrollTrigger: { trigger: '.sensei-title', start: 'top 85%' } });
-  gsap.fromTo('.sensei-big', { '--ink-cut': '100%' }, {
-    '--ink-cut': '0%', ease: 'none',
-    scrollTrigger: { trigger: '.sensei-title', start: 'top 90%', end: 'bottom 45%', scrub: true }
+  gsap.fromTo('.sensei-big', { '--ink': '0%' }, {
+    '--ink': '118%', ease: 'none',
+    scrollTrigger: { trigger: '.sensei-title', start: 'top 92%', end: 'bottom 40%', scrub: 1.4 }
   });
 
   /* ---------- Results: the stamp lands, then the certificates fly off one by one ---------- */
@@ -632,77 +643,26 @@
     layout();
   }
 
-  // Letters run through random kana before settling on the target word.
-  function scramble(element, target, seconds = 1) {
-    const glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン';
-    const start = performance.now();
-    const total = seconds * 1000;
-    const chars = [...target];
-    const tick = now => {
-      const progress = Math.min(1, (now - start) / total);
-      const settled = Math.floor(progress * chars.length);
-      element.innerHTML = chars.map((ch, i) => {
-        if (i < settled || ch === ' ') return ch;
-        return `<span class="sc">${glyphs[Math.floor(Math.random() * glyphs.length)]}</span>`;
-      }).join('');
-      if (progress < 1) requestAnimationFrame(tick);
-      else element.textContent = target;
-    };
-    requestAnimationFrame(tick);
-  }
-
-  // The closing line: the last word keeps switching language with a scramble, and on a mouse
-  // the letters of "Начнём говорить" grow heavier as the cursor comes near.
+  // The closing line: the last word gently changes language, a plain crossfade.
   function setupFooterWord() {
     const word = q('[data-cycle]');
-    const line = q('[data-proximity]');
-    if (word && !reduce) {
-      const options = word.dataset.cycle.split('|');
-      let index = 0;
-      let visible = false;
-      if ('IntersectionObserver' in window) new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(word);
-      setInterval(() => {
-        if (!visible || document.hidden) return;
-        index = (index + 1) % options.length;
-        const next = options[index];
-        // A soft crossfade: the old word lifts away and blurs, the new one rises into place.
-        const out = word.animate(
-          [{ opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-.3em)', filter: 'blur(10px)' }],
-          { duration: 520, easing: 'cubic-bezier(.5, 0, .75, 0)', fill: 'forwards' }
-        );
-        out.onfinish = () => {
-          word.textContent = next;
-          word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(next));
-          out.cancel();
-          word.animate(
-            [{ opacity: 0, transform: 'translateY(.3em)', filter: 'blur(10px)' }, { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }],
-            { duration: 820, easing: 'cubic-bezier(.22, 1, .36, 1)' }
-          );
-        };
-      }, 2800);
-    }
-    if (line && finePointer && !reduce) {
-      // Letters are wrapped per word so a word never breaks across lines.
-      line.innerHTML = line.textContent.split(' ').map(w => `<span class="wrd">${[...w].map(ch => `<span class="ch">${ch}</span>`).join('')}</span>`).join(' ');
-      const letters = qa('.ch', line);
-      let frame = null;
-      let pointer = null;
-      const paint = () => {
-        frame = null;
-        letters.forEach(letter => {
-          const box = letter.getBoundingClientRect();
-          const distance = pointer ? Math.hypot(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2)) : 9999;
-          const weight = 400 + 300 * Math.max(0, 1 - distance / 260);
-          letter.style.setProperty('--w', weight.toFixed(0));
-        });
+    if (!word || reduce) return;
+    const options = word.dataset.cycle.split('|');
+    let index = 0;
+    let visible = false;
+    if ('IntersectionObserver' in window) new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(word);
+    setInterval(() => {
+      if (!visible || document.hidden) return;
+      index = (index + 1) % options.length;
+      const next = options[index];
+      const out = word.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' });
+      out.onfinish = () => {
+        word.textContent = next;
+        word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(next));
+        out.cancel();
+        word.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-in-out' });
       };
-      const footer = q('.site-footer');
-      footer?.addEventListener('pointermove', event => {
-        pointer = { x: event.clientX, y: event.clientY };
-        if (!frame) frame = requestAnimationFrame(paint);
-      });
-      footer?.addEventListener('pointerleave', () => { pointer = null; if (!frame) frame = requestAnimationFrame(paint); });
-    }
+    }, 3200);
   }
 
   function setupMenu() {
