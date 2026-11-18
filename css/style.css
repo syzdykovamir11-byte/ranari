@@ -31,6 +31,23 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+@font-face {
+  font-family: 'Prata';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/prata-cyrillic.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Prata';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/prata-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Palette taken from the washi paper behind the fan, the plum blossoms and the matcha bowl. */
 :root {
   --washi: #f5e6d3;
@@ -49,6 +66,7 @@
 
   --font: 'Golos Text', system-ui, sans-serif;
   --display: 'Cormorant Garamond', Georgia, serif;
+  --heading: 'Prata', 'Cormorant Garamond', Georgia, serif;
   --jp: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', 'Noto Serif CJK JP', serif;
   --gutter: clamp(16px, 4vw, 56px);
   --max: 1360px;
@@ -91,8 +109,8 @@ em { font-style: normal; color: var(--rose); }
 
 /* ---------- Shared type ---------- */
 .display {
-  font-family: var(--display); font-weight: 500; line-height: .88; letter-spacing: -.025em;
-  font-size: clamp(3.6rem, 12vw, 12rem);
+  font-family: var(--heading); font-weight: 400; line-height: .98; letter-spacing: -.03em;
+  font-size: clamp(3rem, 10.2vw, 10rem);
 }
 .w { display: inline-block; overflow: clip; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
 .wi { display: inline-block; will-change: transform; }
@@ -387,7 +405,7 @@ section, .marquee { position: relative; z-index: 1; }
   width: min(100%, var(--max) + 2 * var(--gutter)); margin-inline: auto;
 }
 .hero-title {
-  font: 500 clamp(3.2rem, 11.5vw, 11rem)/.86 var(--display); letter-spacing: -.03em;
+  font: 400 clamp(2.9rem, 9.4vw, 9rem)/1 var(--heading); letter-spacing: -.035em;
   max-width: 11ch;
 }
 .hero-title em { display: block; }
@@ -520,7 +538,7 @@ section, .marquee { position: relative; z-index: 1; }
 }
 .plan-brand { font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
 .plan-brand b { font-family: var(--display); font-size: 1rem; letter-spacing: .1em; color: var(--ink); }
-.plan-title { font: 500 clamp(2.6rem, 4vw, 3.4rem)/.95 var(--display); letter-spacing: -.02em; }
+.plan-title { font: 400 clamp(2.2rem, 3.2vw, 2.7rem)/1.06 var(--heading); letter-spacing: -.025em; }
 .plan-title span { display: block; color: var(--rose); }
 .plan-tag { padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); }
 .plan-list { display: grid; gap: 14px; }
@@ -552,7 +570,6 @@ section, .marquee { position: relative; z-index: 1; }
   position: absolute; z-index: -1; right: -6px; bottom: 70px;
   font-size: clamp(6rem, 10vw, 8.5rem); line-height: 1; color: var(--sakura); opacity: .35; pointer-events: none;
 }
-.plan-title span { display: inline; }
 
 /* ---------- Sensei ---------- */
 .sensei { padding: clamp(110px, 16vw, 220px) 0 clamp(80px, 12vw, 160px); }
@@ -571,7 +588,7 @@ section, .marquee { position: relative; z-index: 1; }
 .teacher-photo--branch .kanji { font-size: clamp(2.6rem, 5vw, 3.6rem); color: var(--rose); letter-spacing: .05em; }
 .teacher-body { display: grid; gap: 18px; max-width: 46rem; }
 .teacher-kicker { font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--rose); }
-.teacher-name { font: 500 clamp(2.6rem, 6.4vw, 6rem)/.92 var(--display); letter-spacing: -.025em; }
+.teacher-name { font: 400 clamp(2.2rem, 5.2vw, 4.8rem)/1.02 var(--heading); letter-spacing: -.03em; }
 .teacher-copy { font-size: clamp(1.02rem, 1.4vw, 1.18rem); color: var(--ink-2); max-width: 40ch; }
 .teacher-links { display: flex; flex-wrap: wrap; gap: 4px 28px; }
 @media (min-width: 900px) {
@@ -600,7 +617,7 @@ section, .marquee { position: relative; z-index: 1; }
 .stack-card:nth-child(3) .stack-level { -webkit-text-stroke-color: var(--sakura); }
 .stack-body { display: grid; align-content: end; gap: 14px; max-width: 30rem; }
 .stack-card:nth-child(3) .stack-body p { color: rgb(245 230 211 / 78%); }
-.stack-body h3 { font: 500 clamp(2.2rem, 4.6vw, 4rem)/.95 var(--display); letter-spacing: -.02em; }
+.stack-body h3 { font: 400 clamp(1.9rem, 3.8vw, 3.3rem)/1.04 var(--heading); letter-spacing: -.025em; }
 .stack-body p { font-size: 1.08rem; color: var(--ink-2); }
 @media (min-width: 900px) {
   .stack-card { grid-template-columns: 1.3fr 1fr; align-items: end; }
@@ -633,7 +650,7 @@ section, .marquee { position: relative; z-index: 1; }
 }
 .site-footer .site-footer em { color: var(--sakura); }
 .footer-top { position: relative; display: grid; gap: 28px; }
-.footer-title { font: 500 clamp(3rem, 9vw, 9rem)/.9 var(--display); letter-spacing: -.03em; max-width: 12ch; }
+.footer-title { font: 400 clamp(2.6rem, 7.4vw, 7.4rem)/1.02 var(--heading); letter-spacing: -.035em; max-width: 12ch; }
 .footer-title em { display: block; }
 .cta-orb {
   position: relative; display: grid; place-items: center; justify-self: start;
@@ -679,7 +696,7 @@ section, .marquee { position: relative; z-index: 1; }
   .plans-rail .rail-viewport { padding-top: 8px; }
   .plan { gap: 12px; padding: 22px 20px 20px; border-radius: 22px; }
   .plan-motto { display: none; }
-  .plan-title { font-size: 2.3rem; }
+  .plan-title { font-size: 2.1rem; }
   .plan-tag { padding-top: 10px; font-size: .94rem; }
   .plan-list { gap: 8px; }
   .plan-list li { grid-template-columns: 32px 1fr; gap: 10px; }
