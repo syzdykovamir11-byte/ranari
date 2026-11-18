@@ -202,17 +202,8 @@
   // Widths of text-driven animations (like the facts line) change once the web fonts arrive.
   if (document.fonts?.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
 
-  /* ---------- LED sign: scrolls faster while the page scrolls ---------- */
-  const led = q('[data-led]');
+  /* ---------- Running line: moves faster while the page scrolls ---------- */
   const ledLoop = q('.led-track')?.getAnimations?.()[0];
-  if (led) {
-    // The neon frame flickers on when it comes into view.
-    ScrollTrigger.create({ trigger: led, start: 'top 75%', once: true, onEnter: () => led.classList.add('is-on') });
-    gsap.fromTo('.led-frame', { scale: 0.92, y: 40 }, {
-      scale: 1, y: 0, ease: 'none',
-      scrollTrigger: { trigger: led, start: 'top bottom', end: 'center center', scrub: 1 }
-    });
-  }
   if (ledLoop) {
     let rate = 1;
     gsap.ticker.add(() => {
