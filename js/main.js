@@ -664,8 +664,21 @@
       setInterval(() => {
         if (!visible || document.hidden) return;
         index = (index + 1) % options.length;
-        word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(options[index]));
-        scramble(word, options[index], 0.9);
+        const next = options[index];
+        // A soft crossfade: the old word lifts away and blurs, the new one rises into place.
+        const out = word.animate(
+          [{ opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-.3em)', filter: 'blur(10px)' }],
+          { duration: 520, easing: 'cubic-bezier(.5, 0, .75, 0)', fill: 'forwards' }
+        );
+        out.onfinish = () => {
+          word.textContent = next;
+          word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(next));
+          out.cancel();
+          word.animate(
+            [{ opacity: 0, transform: 'translateY(.3em)', filter: 'blur(10px)' }, { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }],
+            { duration: 820, easing: 'cubic-bezier(.22, 1, .36, 1)' }
+          );
+        };
       }, 2800);
     }
     if (line && finePointer && !reduce) {
