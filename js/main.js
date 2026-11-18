@@ -10,6 +10,9 @@
   if (typeof window.setupCarousel === 'function') document.querySelectorAll('[data-rail]').forEach(window.setupCarousel);
   setupReviews();
   setupMenu();
+  setupDeck();
+  setupLadder();
+  setupPlansIndex();
   setupLiquidGlass();
   // The menu panel is hidden at load, so its map is drawn the first time it opens.
   window.addEventListener('ranari:menu-open', () => {
@@ -75,7 +78,7 @@
             }
           });
           child.replaceWith(fragment);
-        } else if (child.nodeType === Node.ELEMENT_NODE) {
+        } else if (child.nodeType === Node.ELEMENT_NODE && !child.matches('.chip, .jq')) {
           walk(child);
         }
       });
@@ -87,8 +90,7 @@
   const heroTitle = q('.hero-title');
   const heroWords = splitWords(heroTitle);
   const splitHeadings = qa('[data-split]').filter(el => el !== heroTitle).map(el => [el, splitWords(el)]);
-  const introText = q('[data-words]');
-  const introWords = introText ? splitWords(introText, false) : [];
+  const wordBlocks = qa('[data-words]').map(el => [el, splitWords(el, false)]);
 
   /* ---------- Loader and hero intro ---------- */
   const heroImage = q('.hero-media img');
@@ -223,12 +225,31 @@
     gsap.from(element, { y: 48, autoAlpha: 0, duration: 1.3, scrollTrigger: { trigger: element, start: 'top 90%' } });
   });
 
-  if (introWords.length) {
-    gsap.fromTo(introWords, { opacity: 0.14 }, {
+  // Long sentences are read in: each word inks in as the line passes the middle of the screen.
+  wordBlocks.forEach(([element, words]) => {
+    gsap.fromTo(words, { opacity: 0.14 }, {
       opacity: 1,
       stagger: 0.12,
       ease: 'none',
-      scrollTrigger: { trigger: introText, start: 'top 82%', end: 'bottom 48%', scrub: true }
+      scrollTrigger: { trigger: element, start: 'top 82%', end: 'bottom 48%', scrub: true }
+    });
+  });
+
+  // Pictures set into the intro sentence pop open as the reader reaches them.
+  qa('.intro .chip').forEach(chip => {
+    gsap.from(chip, {
+      scale: 0, rotation: -14, duration: 1.1, ease: 'back.out(1.8)',
+      scrollTrigger: { trigger: chip, start: 'top 70%' }
+    });
+  });
+
+  // The line of facts slides sideways with the scroll, like credits.
+  const factsRow = q('.facts');
+  if (factsRow) {
+    gsap.fromTo(factsRow, { x: () => innerWidth * 0.3 }, {
+      x: () => -(factsRow.scrollWidth - innerWidth) - innerWidth * 0.04,
+      ease: 'none',
+      scrollTrigger: { trigger: '.facts-strip', start: 'top bottom', end: 'bottom top', scrub: 1, invalidateOnRefresh: true }
     });
   }
 
@@ -256,37 +277,19 @@
     y: 30, autoAlpha: 0, delay: 0.4, scrollTrigger: { trigger: '.plans-rail', start: 'top 85%' }
   });
 
-  /* ---------- Sensei ---------- */
-  qa('[data-clip]').forEach(photo => {
-    const timeline = gsap.timeline({ scrollTrigger: { trigger: photo, start: 'top 85%' } });
-    timeline.fromTo(photo, { clipPath: 'circle(0% at 50% 50%)', rotation: -12 }, { clipPath: 'circle(50% at 50% 50%)', rotation: 0, duration: 1.6 });
-    const inner = q('img, .kanji', photo);
-    if (inner) timeline.fromTo(inner, { scale: 1.5 }, { scale: 1, duration: 2 }, 0);
-  });
+  /* ---------- Sensei: the deck rises in, its back card fans out after ---------- */
+  // The cards' own transforms hold the fan, so the whole deck is animated instead.
+  if (q('.deck')) {
+    gsap.from('.deck', {
+      y: 120, rotation: 6, autoAlpha: 0, duration: 1.6,
+      scrollTrigger: { trigger: '.deck', start: 'top 85%' }
+    });
+  }
 
-  /* ---------- Results: cards stack and recede ---------- */
-  const stackCards = qa('.stack-card');
-  stackCards.forEach((card, index) => {
-    const level = q('.stack-level', card);
-    gsap.fromTo(level, { yPercent: 18 }, {
-      yPercent: -6,
-      ease: 'none',
-      scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: true }
-    });
-    const next = stackCards[index + 1];
-    if (!next) return;
-    gsap.fromTo(card, { scale: 1, filter: 'brightness(1)' }, {
-      scale: 0.9 + index * 0.02,
-      filter: 'brightness(0.95)',
-      ease: 'none',
-      scrollTrigger: {
-        trigger: next,
-        start: 'top bottom',
-        end: () => `top ${parseFloat(getComputedStyle(next).top) || 100}px`,
-        scrub: true,
-        invalidateOnRefresh: true
-      }
-    });
+  /* ---------- Results: the scale slides in, stories rise ---------- */
+  gsap.from('.ladder-scale', { y: 40, autoAlpha: 0, duration: 1.4, scrollTrigger: { trigger: '.ladder', start: 'top 85%' } });
+  qa('.story').forEach(story => {
+    gsap.from(story.children, { y: 60, duration: 1.4, stagger: 0.08, scrollTrigger: { trigger: story, start: 'top 75%' } });
   });
 
   /* ---------- Footer ---------- */
@@ -470,6 +473,161 @@
       row.style.setProperty('--dur', `${Math.round(list.scrollWidth / 2 / 38)}s`);
       row.classList.add('is-looping');
     });
+  }
+
+  // Teacher cards lie in a fanned deck. Drag the top card aside (or use the arrows) and it goes to the back.
+  function setupDeck() {
+    const deck = q('[data-deck]');
+    if (!deck) return;
+    const order = qa('.teacher-card', deck);
+    const prevButton = q('[data-deck-prev]');
+    const nextButton = q('[data-deck-next]');
+    let busy = false;
+
+    function layout() {
+      order.forEach((card, index) => {
+        card.style.setProperty('--pos', index);
+        card.dataset.pos = index;
+        card.inert = index !== 0;
+      });
+    }
+
+    function sendBack(direction) {
+      if (busy || order.length < 2) return;
+      busy = true;
+      const top = order[0];
+      top.classList.remove('dragging');
+      top.style.transition = 'transform .42s cubic-bezier(.45, 0, .7, .4)';
+      top.style.transform = `translate(${direction * 115}%, -6%) rotate(${direction * 14}deg)`;
+      setTimeout(() => {
+        order.push(order.shift());
+        top.style.transition = '';
+        top.style.transform = '';
+        layout();
+        busy = false;
+      }, reduce ? 0 : 400);
+    }
+
+    function bringFront() {
+      if (busy || order.length < 2) return;
+      busy = true;
+      const card = order[order.length - 1];
+      card.style.transition = 'none';
+      card.style.transform = 'translate(-115%, -6%) rotate(-14deg)';
+      order.unshift(order.pop());
+      layout();
+      card.getBoundingClientRect();
+      card.style.transition = '';
+      card.style.transform = '';
+      setTimeout(() => { busy = false; }, 300);
+    }
+
+    nextButton?.addEventListener('click', () => sendBack(1));
+    prevButton?.addEventListener('click', bringFront);
+    deck.addEventListener('keydown', event => {
+      if (event.key === 'ArrowRight') sendBack(1);
+      if (event.key === 'ArrowLeft') bringFront();
+    });
+
+    let drag = null;
+    deck.addEventListener('pointerdown', event => {
+      const card = event.target.closest('.teacher-card');
+      if (!card || card !== order[0] || busy || event.target.closest('a, button') || event.button !== 0) return;
+      drag = { card, id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, t: performance.now(), axis: null };
+    });
+    deck.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      if (!drag.axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (drag.axis === 'y') { drag = null; return; }
+        drag.card.setPointerCapture(event.pointerId);
+        drag.card.classList.add('dragging');
+      }
+      drag.dx = dx;
+      drag.card.style.transform = `translate(${dx}px, ${dy * 0.15}px) rotate(${dx * 0.04}deg)`;
+    });
+    const release = event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { card, dx, t, axis } = drag;
+      drag = null;
+      if (axis !== 'x') return;
+      const speed = Math.abs(dx) / Math.max(1, performance.now() - t);
+      if (Math.abs(dx) > 90 || speed > 0.6) { sendBack(Math.sign(dx) || 1); return; }
+      card.classList.remove('dragging');
+      card.style.transform = '';
+    };
+    deck.addEventListener('pointerup', release);
+    deck.addEventListener('pointercancel', release);
+    layout();
+  }
+
+  // The JLPT scale follows the stories: the story in the middle of the screen marks its level,
+  // the fill climbs from N5 to it, and every level a student passed gets a blossom.
+  function setupLadder() {
+    const ladder = q('[data-ladder]');
+    if (!ladder) return;
+    const stories = qa('.story', ladder);
+    const levels = qa('.ladder-scale li[data-level]', ladder);
+    const fill = q('.ladder-fill', ladder);
+    const reached = new Set();
+    const vertical = matchMedia('(min-width: 900px)');
+
+    function mark(level) {
+      if (level) stories.forEach(story => {
+        const storyLevel = Number(story.dataset.level);
+        if (storyLevel >= level) reached.add(storyLevel);
+      });
+      stories.forEach(story => story.classList.toggle('is-active', Number(story.dataset.level) === level));
+      levels.forEach(item => {
+        const value = Number(item.dataset.level);
+        item.classList.toggle('is-reached', Boolean(level) && value >= level);
+        item.classList.toggle('is-current', value === level);
+        item.classList.toggle('is-passed', reached.has(value) && value >= (level || 6));
+      });
+      const progress = level ? (5 - level) / 4 : 0;
+      fill.style.transform = vertical.matches ? `scaleY(${progress})` : `scaleX(${progress})`;
+      fill.style.transition = 'transform 1s cubic-bezier(.22, 1, .36, 1)';
+    }
+
+    let current = 0;
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { current = Number(entry.target.dataset.level); mark(current); }
+        });
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      stories.forEach(story => observer.observe(story));
+    } else {
+      stories.forEach(story => story.classList.add('is-active'));
+    }
+    vertical.addEventListener?.('change', () => mark(current));
+    mark(0);
+  }
+
+  // The list of plan names above the carousel selects a card and follows the carousel.
+  function setupPlansIndex() {
+    const rail = q('.plans-rail');
+    const buttons = qa('.plans-index [data-plan]');
+    if (!rail || !buttons.length) return;
+    const show = index => {
+      buttons.forEach((button, i) => button.setAttribute('aria-current', String(i === index)));
+      const active = buttons[index];
+      const row = active?.closest('.plans-index');
+      if (row && row.scrollWidth > row.clientWidth) {
+        row.scrollTo({ left: active.offsetLeft - row.clientWidth / 2 + active.offsetWidth / 2, behavior: reduce ? 'auto' : 'smooth' });
+      }
+    };
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        if (typeof rail.railSelect === 'function') rail.railSelect(index);
+        else show(index);
+      });
+    });
+    rail.addEventListener('rail:change', event => show(event.detail.index));
+    show(0);
   }
 
   function setupMenu() {

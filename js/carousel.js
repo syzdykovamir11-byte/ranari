@@ -80,6 +80,7 @@ function setupCarousel(rail) {
       card.classList.toggle('active', index === active);
       card.inert = index !== active;
     });
+    rail.dispatchEvent(new CustomEvent('rail:change', { detail: { index: active } }));
     if (announce) {
       const name = names[active] || rail.dataset.label;
       status.textContent = `${name}. ${active + 1} из ${cards.length}`;
@@ -216,6 +217,7 @@ function setupCarousel(rail) {
     snap();
   });
 
+  rail.railSelect = index => select(index);
   rail.classList.add('ready');
   measure();
   updateSelection(false);
