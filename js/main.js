@@ -90,6 +90,8 @@
   const heroWords = splitWords(heroTitle);
   const splitHeadings = qa('[data-split]').filter(el => el !== heroTitle).map(el => [el, splitWords(el)]);
   const wordBlocks = qa('[data-words]').map(el => [el, splitWords(el, false)]);
+  const blurBlock = q('[data-blur-reveal]');
+  const blurWords = blurBlock ? splitWords(blurBlock, false) : [];
 
   /* ---------- Loader and hero intro ---------- */
   const heroImage = q('.hero-media img');
@@ -235,6 +237,20 @@
       scrollTrigger: { trigger: element, start: 'top 82%', end: 'bottom 48%', scrub: true }
     });
   });
+
+  // Intro: words come out of a blur one after another as the block is read. After the "Blur
+  // Reveal" preset of the 21st.dev "Text Scroll Reveal" component, ported from framer-motion to GSAP.
+  if (blurWords.length) {
+    const total = blurWords.length;
+    const span = Math.max(0.14, 1.8 / total);
+    const timeline = gsap.timeline({
+      scrollTrigger: { trigger: blurBlock, start: 'top 82%', end: 'bottom 42%', scrub: 0.6 }
+    });
+    blurWords.forEach((word, index) => {
+      timeline.fromTo(word, { opacity: 0, filter: 'blur(10px)' }, { opacity: 1, filter: 'blur(0px)', ease: 'none', duration: span }, (index / total) * 0.78);
+    });
+    timeline.to({}, { duration: Math.max(0, 1 - timeline.duration()) });
+  }
 
   // The line of facts slides sideways with the scroll, like credits.
   const factsRow = q('.facts');
