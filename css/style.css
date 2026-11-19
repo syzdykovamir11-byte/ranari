@@ -630,9 +630,6 @@ section { position: relative; z-index: 1; }
 .sensei-meaning { max-width: 30ch; font-size: clamp(1rem, 1.3vw, 1.12rem); color: var(--ink-2); }
 .sensei-meaning [lang="ja"] { color: var(--rose); }
 .deck-controls { display: flex; align-items: center; gap: 12px; }
-/* With the scroll shuffle the cards move on their own, so the arrows are not needed. */
-.deck-scroll .deck-controls { display: none; }
-.deck-scroll .teacher-card { transition: box-shadow .6s; cursor: default; filter: none; }
 .deck-hint { margin-left: 8px; font-size: .86rem; font-weight: 600; color: var(--ink-2); }
 .deck { position: relative; display: grid; padding: 0 28px 28px 0; touch-action: pan-y; user-select: none; }
 .teacher-card {

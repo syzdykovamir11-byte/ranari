@@ -10,6 +10,7 @@
   if (typeof window.setupCarousel === 'function') document.querySelectorAll('[data-rail]').forEach(window.setupCarousel);
   setupReviews();
   setupMenu();
+  setupDeck();
   setupFooterWord();
   setupLiquidGlass();
   // The menu panel is hidden at load, so its map is drawn the first time it opens.
@@ -20,7 +21,6 @@
   if (reduce || !hasGsap) {
     loader?.remove();
     setupHeader(null);
-    setupDeck();
     return;
   }
 
@@ -297,7 +297,6 @@
       y: 120, rotation: 6, autoAlpha: 0, duration: 1.6,
       scrollTrigger: { trigger: '.deck', start: 'top 85%' }
     });
-    setupDeckScroll();
   }
   gsap.from('.sensei-ruby', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.6, scrollTrigger: { trigger: '.sensei-title', start: 'top 85%' } });
   gsap.fromTo('.sensei-big', { '--ink': '0%' }, {
@@ -386,41 +385,6 @@
     });
     timeline.to({}, { duration: 0.4 });
     markLevel(0);
-  }
-
-  // The teacher cards shuffle as the page scrolls: the section pins, the front card slides out to
-  // the side while the back one moves the other way, they swap, and the second card ends in front.
-  function setupDeckScroll() {
-    const section = q('.sensei');
-    const cards = qa('.teacher-card');
-    if (!section || cards.length < 2) return;
-    const [first, second] = cards;
-    section.classList.add('deck-scroll');
-    const back = { x: 22, y: 18, rotation: 3.5, scale: 0.96 };
-    const front = { x: 0, y: 0, rotation: 0, scale: 1 };
-    const setActive = card => cards.forEach(c => { c.inert = c !== card; });
-    gsap.set(first, { ...front, zIndex: 2 });
-    gsap.set(second, { ...back, zIndex: 1 });
-    setActive(first);
-    const wide = () => innerWidth >= 700;
-    gsap.timeline({
-      scrollTrigger: {
-        // On phones the section pins once the whole deck is on screen, so no card text is cut off.
-        trigger: wide() ? section : q('.deck'),
-        start: () => (wide() ? 'center center' : 'bottom bottom-=16'),
-        end: () => `+=${innerHeight * 1.1}`,
-        pin: true,
-        scrub: 0.8,
-        invalidateOnRefresh: true,
-        onUpdate: self => setActive(self.progress < 0.5 ? first : second)
-      }
-    })
-      .to(first, { x: () => -(wide() ? 0.42 : 0.3) * first.offsetWidth, y: -20, rotation: -9, scale: 0.97, ease: 'sine.inOut', duration: 1 }, 0)
-      .to(second, { x: () => (wide() ? 0.3 : 0.2) * second.offsetWidth, y: 10, rotation: 7, scale: 0.98, ease: 'sine.inOut', duration: 1 }, 0)
-      .set(first, { zIndex: 1 }, 1)
-      .set(second, { zIndex: 2 }, 1)
-      .to(first, { ...back, ease: 'sine.inOut', duration: 1 }, 1)
-      .to(second, { ...front, ease: 'sine.inOut', duration: 1 }, 1);
   }
 
   /* ---------- Header, cursor, magnetic buttons, petals ---------- */
