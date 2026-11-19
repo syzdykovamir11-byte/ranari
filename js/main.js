@@ -193,47 +193,30 @@
 
   const anchorOf = branch => q(branch.dataset.anchor || '') || branch;
   const branchMedia = gsap.matchMedia();
-  // Computers: the branch rises faster than the page, grows a little and comes out of the edge.
-  branchMedia.add('(min-width: 701px)', () => {
+  // The branch rises faster than the page, so it passes upward like walking under a tree, and grows
+  // out of the screen edge as it comes in. Phones get the same rise with a shorter scrub (no lag)
+  // and no scaling.
+  branchMedia.add({ phone: '(max-width: 700px)', wide: '(min-width: 701px)' }, context => {
+    const { phone } = context.conditions;
     branches.forEach(branch => {
+      if (!branch.offsetParent) return;
       const speed = parseFloat(branch.dataset.speed) || 0.7;
       const fromRight = branch.classList.contains('branch--r');
-      const travel = 0.26;
+      const travel = phone ? 0.24 : 0.26;
       gsap.timeline({
         scrollTrigger: {
           trigger: anchorOf(branch),
           start: () => `${branch.dataset.at || 'center'} bottom+=${branch.offsetHeight / 2}`,
           end: () => `${branch.dataset.at || 'center'} top-=${branch.offsetHeight / 2}`,
-          scrub: 1.2,
+          scrub: phone ? 0.5 : 1.2,
           invalidateOnRefresh: true
         }
       })
         .fromTo(branch,
-          { y: () => innerHeight * speed * travel, scale: 0.94 },
-          { y: () => -innerHeight * speed * travel, scale: 1.08, ease: 'none', duration: 1 }, 0)
-        .fromTo(branch, { xPercent: fromRight ? 45 : -45 }, { xPercent: 0, ease: 'sine.out', duration: 0.5 }, 0)
-        .fromTo(branch, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'sine.inOut', duration: 0.22 }, 0);
-    });
-  });
-  // Phones: an even pass with no lag. The branch slides out of the edge as it enters, drifts with
-  // the page, and slides back into the edge as it leaves.
-  branchMedia.add('(max-width: 700px)', () => {
-    branches.forEach(branch => {
-      if (!branch.offsetParent) return;
-      const fromRight = branch.classList.contains('branch--r');
-      const out = fromRight ? 38 : -38;
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: anchorOf(branch),
-          start: () => `${branch.dataset.at || 'center'} bottom+=${branch.offsetHeight / 2}`,
-          end: () => `${branch.dataset.at || 'center'} top-=${branch.offsetHeight / 2}`,
-          scrub: 0.3,
-          invalidateOnRefresh: true
-        }
-      })
-        .fromTo(branch, { y: () => innerHeight * 0.12 }, { y: () => -innerHeight * 0.12, ease: 'none', duration: 1 }, 0)
-        .fromTo(branch, { xPercent: out }, { xPercent: 0, ease: 'power1.out', duration: 0.32 }, 0)
-        .to(branch, { xPercent: out, ease: 'power1.in', duration: 0.32 }, 0.68);
+          { y: () => innerHeight * speed * travel, scale: phone ? 1 : 0.94 },
+          { y: () => -innerHeight * speed * travel, scale: phone ? 1 : 1.08, ease: 'none', duration: 1 }, 0)
+        .fromTo(branch, { xPercent: fromRight ? 40 : -40 }, { xPercent: 0, ease: 'sine.out', duration: 0.45 }, 0)
+        .fromTo(branch, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'sine.inOut', duration: 0.2 }, 0);
     });
   });
 
@@ -343,11 +326,19 @@
   });
 
   /* ---------- Sensei: the deck rises in, the heading decodes, the kanji is inked ---------- */
-  if (q('.deck')) {
-    gsap.from('.deck', {
-      y: 120, rotation: 6, autoAlpha: 0, duration: 1.6,
-      scrollTrigger: { trigger: '.deck', start: 'top 85%' }
-    });
+  // The teacher cards are dealt in: each flies up from below with a turn and lands in its place
+  // in the fan. The end values match the CSS fan, so clearing them hands control back to the deck.
+  const deckCards = qa('.teacher-card');
+  if (deckCards.length) {
+    const fan = i => ({ x: i * 22, y: i * 18, rotation: i * 3.5, scale: 1 - i * 0.04 });
+    deckCards.forEach(card => { card.style.transition = 'none'; });
+    gsap.timeline({
+      scrollTrigger: { trigger: '.deck', start: 'top 80%', once: true },
+      onComplete: () => deckCards.forEach(card => { gsap.set(card, { clearProps: 'transform,opacity' }); card.style.transition = ''; })
+    })
+      .fromTo([...deckCards].reverse(),
+        { y: () => innerHeight * 0.5, x: (i, el) => (deckCards.indexOf(el) ? 160 : -120), rotation: (i, el) => (deckCards.indexOf(el) ? 24 : -18), scale: 0.9, opacity: 0 },
+        { ...{}, x: (i, el) => fan(deckCards.indexOf(el)).x, y: (i, el) => fan(deckCards.indexOf(el)).y, rotation: (i, el) => fan(deckCards.indexOf(el)).rotation, scale: (i, el) => fan(deckCards.indexOf(el)).scale, opacity: 1, duration: 1.3, ease: 'expo.out', stagger: 0.22 });
   }
   gsap.from('.sensei-ruby', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.6, scrollTrigger: { trigger: '.sensei-title', start: 'top 85%' } });
   gsap.fromTo('.sensei-big', { '--ink': '0%' }, {
@@ -591,11 +582,15 @@
     qa('[data-row]').forEach(row => {
       const list = q('.review-list', row);
       if (reduce) return;
-      [...list.children].forEach(item => {
+      // Repeat the set until it is wider than the screen, then double it, so the loop never shows a gap.
+      const originals = [...list.children];
+      const addCopy = items => items.forEach(item => {
         const clone = item.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
         list.append(clone);
       });
+      while (list.scrollWidth < innerWidth * 1.15 && list.children.length < originals.length * 6) addCopy(originals);
+      addCopy([...list.children]);
       row.classList.add('is-looping');
       // Driven by the Web Animations API: Safari did not run the CSS loop whose duration came
       // from a custom property set on the row.
