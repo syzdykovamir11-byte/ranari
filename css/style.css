@@ -182,7 +182,6 @@ em { font-style: normal; color: var(--rose); }
 
 /* ---------- Petals and cursor ---------- */
 /* Petals fall only over the first screen. */
-.petals { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
 .cursor { display: none; }
 @media (hover: hover) and (pointer: fine) {
   .js .cursor {
@@ -738,10 +737,12 @@ section { position: relative; z-index: 1; }
 /* Without the pinned animation the certificates are a simple list. */
 .certs:not(.is-pinned) .cert-deck { gap: 20px; }
 .certs:not(.is-pinned) .cert { grid-area: auto; }
-.certs.is-pinned .certs-stage { min-height: 100vh; align-content: center; padding-top: calc(var(--header-h) + 10px); }
+.certs.is-pinned .certs-stage { min-height: 100vh; min-height: 100svh; align-content: center; padding-top: calc(var(--header-h) + 10px); }
 @media (max-width: 700px) {
   .cert { min-height: 0; }
-  .certs.is-pinned .cert { min-height: min(62vh, 480px); }
+  /* Phones: the cards take their content's height (no empty bottom half) and the stage starts
+     below the floating header, so the N5-N1 scale is never covered by it. */
+  .certs.is-pinned .certs-stage { padding-top: calc(var(--header-h) + 30px); padding-bottom: 20px; }
   .cert-seal { top: 58px; width: 64px; }
   .results-head { padding-top: 70px; }
   .pass-stamp { top: 0; width: 64px; font-size: 1.05rem; }

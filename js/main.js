@@ -427,13 +427,12 @@
     markLevel(0);
   }
 
-  /* ---------- Header, cursor, magnetic buttons, petals ---------- */
+  /* ---------- Header, cursor, magnetic buttons ---------- */
   setupHeader(lenis);
   if (finePointer) {
     setupCursor();
     setupMagnetic();
   }
-  if (typeof window.setupPetals === 'function') window.setupPetals(q('.petals'), lenis, gsap.ticker);
 
   if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener('load', () => ScrollTrigger.refresh());
