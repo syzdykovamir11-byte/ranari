@@ -1,7 +1,9 @@
 (() => {
   const q = (selector, root = document) => root.querySelector(selector);
   const qa = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The site always animates. Honouring the system "reduce motion" setting switched every
+  // animation off on computers where it is turned on, and the owner wants the motion there too.
+  const reduce = false;
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const loader = q('.loader');
   const header = q('.site-header');
@@ -560,14 +562,11 @@
       // Driven by the Web Animations API: Safari did not run the CSS loop whose duration came
       // from a custom property set on the row.
       const reverse = row.classList.contains('review-row--reverse');
-      const loop = list.animate(
+      list.animate(
         [{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }],
-        { duration: Math.max(20, list.scrollWidth / 2 / 38) * 1000, iterations: Infinity, direction: reverse ? 'reverse' : 'normal' }
+        // About 30 px per second; the rows never pause, on hover or on tap.
+        { duration: Math.max(24, list.scrollWidth / 2 / 30) * 1000, iterations: Infinity, direction: reverse ? 'reverse' : 'normal' }
       );
-      if (finePointer) {
-        row.addEventListener('pointerenter', () => loop.pause());
-        row.addEventListener('pointerleave', () => loop.play());
-      }
     });
   }
 

@@ -468,10 +468,6 @@ section { position: relative; z-index: 1; }
 .iline .wd { display: inline-block; will-change: opacity, filter; }
 .iline--lead { border-top: 0; padding-top: 0; font-size: clamp(2.5rem, 6.4vw, 6rem); line-height: 1; max-width: 16ch; }
 .iline:last-child { border-bottom: 1px solid var(--line); }
-@media (min-width: 900px) {
-  /* Every second line steps in, so the block reads like set type rather than a list. */
-  .iline:nth-child(odd):not(.iline--lead) { margin-left: clamp(0px, 14vw, 240px); max-width: 28ch; }
-}
 
 /* Facts: one line of large numbers that slides sideways while the page scrolls. */
 .facts-strip { margin-top: clamp(72px, 10vw, 140px); overflow: clip; border-block: 1px solid var(--line); }
@@ -800,15 +796,6 @@ section { position: relative; z-index: 1; }
   font: 600 clamp(5rem, 25vw, 30rem)/.78 var(--display); letter-spacing: -.02em; color: var(--washi);
 }
 .wordmark span { display: inline-block; }
-
-/* ---------- Reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  .js .loader, .petals, .js .cursor { display: none; }
-  .branch { will-change: auto; }
-  .scroll-cue i::after { animation: none; }
-  .led-track { animation: none; }
-  *, *::before, *::after { transition-duration: .01ms !important; }
-}
 
 /* ---------- Phone layout for the plans carousel ---------- */
 @media (max-width: 700px) {

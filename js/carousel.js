@@ -14,7 +14,8 @@ function setupCarousel(rail) {
   progress.className = 'rail-progress';
   progress.setAttribute('aria-hidden', 'true');
   position.before(progress);
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  // Always animate, as in main.js: the system "reduce motion" setting no longer switches motion off.
+  const reducedMotion = { matches: false, addEventListener() {} };
   const names = cards.map(card => card.dataset.slideName || card.querySelector('h3')?.textContent.trim());
   let active = 0;
   let x = 0;
