@@ -113,6 +113,20 @@ em { font-style: normal; color: var(--rose); }
   font-size: clamp(3.6rem, 12vw, 12rem);
 }
 /* Section titles in Unbounded: Тарифы and Результаты JLPT. */
+/* "Отзывы" in the hero's heavy rose type: pale at first, it fills with rose from left to
+   right as the section scrolls in. */
+.reviews-word {
+  font: 800 clamp(3.2rem, 11vw, 10rem)/.95 var(--heading); letter-spacing: -.045em;
+  color: var(--rose);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .reviews-word {
+    color: transparent;
+    background: linear-gradient(90deg, var(--rose) 0 50%, rgb(162 52 75 / 16%) 50%) no-repeat;
+    background-size: 200% 100%; background-position: var(--fill, 100%) 0;
+    -webkit-background-clip: text; background-clip: text;
+  }
+}
 /* Same type as the hero title "Научим говорить по-японски". */
 .display--hero { font-family: var(--heading); font-weight: 400; line-height: 1.04; letter-spacing: -.03em; font-size: clamp(2.4rem, 7.4vw, 7.2rem); }
 .display--u {
@@ -738,27 +752,17 @@ section { position: relative; z-index: 1; }
 /* ---------- Reviews: one large quote, then two moving rows ---------- */
 .reviews { padding: clamp(80px, 12vw, 160px) 0 clamp(100px, 14vw, 180px); background: rgb(236 210 179 / 55%); overflow: clip; }
 .reviews-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 22px; margin-bottom: clamp(48px, 7vw, 96px); }
-/* After the 21st.dev "Grid Testimonials Marquee": two rows in a grid of hairlines, cards divided
-   by thin rules instead of boxes, and both ends of each row fading into the background. */
-.review-rows { display: grid; border-block: 1px solid var(--line-strong); }
-.review-row {
-  overflow: hidden; overflow: clip;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-.review-row + .review-row { border-top: 1px solid var(--line-strong); }
-.review-list { display: flex; width: max-content; align-items: stretch; }
+.review-rows { display: grid; gap: 26px; }
+.review-row { overflow: hidden; overflow: clip; padding-block: 14px; }
+.review-list { display: flex; gap: 22px; width: max-content; padding-right: 22px; align-items: flex-start; }
 .review {
-  display: flex; flex-direction: column; gap: 14px; flex: none;
-  width: clamp(280px, 30vw, 420px); min-height: clamp(180px, 16vw, 220px);
-  padding: clamp(22px, 2.6vw, 34px) clamp(22px, 2.6vw, 36px);
-  border-right: 1px solid var(--line-strong);
-  transition: background-color .4s;
+  width: min(78vw, 420px); flex: none; padding: clamp(24px, 3vw, 36px); border-radius: 24px;
+  background: var(--washi-3); border: 1px solid var(--line);
+  transition: transform .6s var(--ease), background-color .4s;
 }
-/* A rose opening mark heads each card. */
-.review::before { content: "“"; font: 500 3.2rem/.5 var(--display); color: var(--rose); height: .32em; }
-@media (hover: hover) and (pointer: fine) { .review:hover { background: rgb(247 220 220 / 55%); } }
-.review blockquote { font: 500 clamp(1.25rem, 1.7vw, 1.55rem)/1.25 var(--display); letter-spacing: -.005em; }
+@media (hover: hover) and (pointer: fine) { .review:hover { transform: translateY(-6px); background: var(--sakura-pale); } }
+.review blockquote { font: 500 clamp(1.35rem, 2vw, 1.7rem)/1.2 var(--display); letter-spacing: -.005em; }
+@keyframes rows { to { transform: translateX(-50%); } }
 .review-row:not(.is-looping) { overflow-x: auto; padding-inline: var(--gutter); scroll-snap-type: x mandatory; }
 .review-row:not(.is-looping) .review { scroll-snap-align: start; }
 

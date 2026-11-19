@@ -353,6 +353,15 @@
   });
   setupCertificates();
 
+  /* ---------- Reviews: the outlined word rises and fills with rose while scrolling ---------- */
+  if (q('.reviews-word')) {
+    gsap.from('.reviews-word', { yPercent: 40, autoAlpha: 0, duration: 1.4, scrollTrigger: { trigger: '.reviews-word', start: 'top 88%' } });
+    gsap.fromTo('.reviews-word', { '--fill': '100%' }, {
+      '--fill': '0%', ease: 'none',
+      scrollTrigger: { trigger: '.reviews-word', start: 'top 85%', end: 'bottom 35%', scrub: 0.8 }
+    });
+  }
+
   /* ---------- Footer ---------- */
   gsap.from('.wordmark span', {
     yPercent: 100,
