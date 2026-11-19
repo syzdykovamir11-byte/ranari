@@ -168,45 +168,28 @@
       <div class="scroll-cue" aria-hidden="true"><span>Листайте</span><i></i></div>
     </section>
 
-    <div class="marquee" aria-hidden="true" data-marquee>
-      <div class="marquee-track">
-        <div class="marquee-group">
-          <span lang="ja">日本語</span><svg><use href="#blossom"/></svg>
-          <span>Разговорный японский</span><svg><use href="#blossom"/></svg>
-          <span>JLPT N5–N1</span><svg><use href="#blossom"/></svg>
-          <span>Группы и индивидуально</span><svg><use href="#blossom"/></svg>
-          <span lang="ja">夢</span><svg><use href="#blossom"/></svg>
-        </div>
-        <div class="marquee-group">
-          <span lang="ja">日本語</span><svg><use href="#blossom"/></svg>
-          <span>Разговорный японский</span><svg><use href="#blossom"/></svg>
-          <span>JLPT N5–N1</span><svg><use href="#blossom"/></svg>
-          <span>Группы и индивидуально</span><svg><use href="#blossom"/></svg>
-          <span lang="ja">夢</span><svg><use href="#blossom"/></svg>
-        </div>
+    <div class="led" data-led aria-label="Разговорный японский, JLPT N5–N1, группы и индивидуально">
+      <div class="led-track" aria-hidden="true">
+        <div class="led-group"><span lang="ja">日本語</span><i aria-hidden="true"></i><span>Разговорный японский</span><i aria-hidden="true"></i><span>JLPT N5–N1</span><i aria-hidden="true"></i><span>Группы и индивидуально</span><i aria-hidden="true"></i><span lang="ja">夢</span><i aria-hidden="true"></i></div>
+        <div class="led-group"><span lang="ja">日本語</span><i aria-hidden="true"></i><span>Разговорный японский</span><i aria-hidden="true"></i><span>JLPT N5–N1</span><i aria-hidden="true"></i><span>Группы и индивидуально</span><i aria-hidden="true"></i><span lang="ja">夢</span><i aria-hidden="true"></i></div>
       </div>
     </div>
 
     <section class="intro" id="about" aria-label="О школе">
       <div class="wrap">
-        <p class="intro-text" data-words>RANARI — онлайн-школа японского языка. Учим говорить по-японски и готовим к JLPT от N5 до N1: в группе или индивидуально, по методике основательницы школы, выпускницы Osaka University.</p>
+        <div class="intro-cards">
+          <p class="icard icard--lead" data-reveal>RANARI — онлайн-школа японского языка.</p>
+          <p class="icard icard--rose" data-reveal>Учим говорить по-японски и готовим к JLPT от N5 до N1.</p>
+          <p class="icard" data-reveal>В группе или индивидуально.</p>
+          <p class="icard icard--dark" data-reveal>По методике основательницы школы, выпускницы Osaka University.</p>
+        </div>
+      </div>
+      <div class="facts-strip" data-facts>
         <dl class="facts">
-          <div class="fact" data-reveal>
-            <dt>Уровни JLPT</dt>
-            <dd>N5–N1</dd>
-          </div>
-          <div class="fact" data-reveal>
-            <dt>Человек в группе</dt>
-            <dd><span data-counter="3">3</span>–<span data-counter="6">6</span></dd>
-          </div>
-          <div class="fact" data-reveal>
-            <dt>Часов в сертификате курса</dt>
-            <dd><span data-counter="180">180</span></dd>
-          </div>
-          <div class="fact" data-reveal>
-            <dt>Минут в премиум-уроке</dt>
-            <dd><span data-counter="90">90</span></dd>
-          </div>
+          <div class="fact"><dt>Уровни JLPT</dt><dd>N5–N1</dd></div>
+          <div class="fact"><dt>Человек в группе</dt><dd><span data-counter="3">3</span>–<span data-counter="6">6</span></dd></div>
+          <div class="fact"><dt>Часов в сертификате курса</dt><dd><span data-counter="180">180</span></dd></div>
+          <div class="fact"><dt>Минут в премиум-уроке</dt><dd><span data-counter="90">90</span></dd></div>
         </dl>
       </div>
     </section>
@@ -214,10 +197,14 @@
     <section class="plans" id="plans" tabindex="-1" aria-labelledby="plans-title">
       <div class="plans-inner">
           <div class="plans-intro">
-            <h2 class="display display--u" id="plans-title" data-split>Тарифы</h2>
-            <p class="plans-lead">Группы открываются по мере набора. Индивидуальные программы подбираем под вашу цель.</p>
-            <a class="link" href="https://wa.me/c/77085453459" target="_blank" rel="noopener">Каталог в WhatsApp <span aria-hidden="true">↗</span></a>
-            
+            <div class="plans-top">
+              <h2 class="display display--u" id="plans-title" data-split>Тарифы</h2>
+              <dl class="plans-notes" data-reveal>
+                <div><dt>Группы</dt><dd>открываются по мере набора</dd></div>
+                <div><dt>Индивидуально</dt><dd>программу подбираем под вашу цель</dd></div>
+              </dl>
+            </div>
+            <a class="link plans-catalog" href="https://wa.me/c/77085453459" target="_blank" rel="noopener">Каталог в WhatsApp <span aria-hidden="true">↗</span></a>
           </div>
         <div class="rail plans-rail" data-rail="plans" data-label="Тариф">
           <div class="rail-viewport" data-viewport role="region" aria-roledescription="карусель" aria-label="Тарифы">
@@ -371,84 +358,123 @@
     </section>
 
     <section class="sensei" id="sensei" tabindex="-1" aria-labelledby="sensei-title">
-      <div class="wrap">
+      <div class="wrap sensei-layout">
         <div class="sensei-head">
-          <h2 class="display" id="sensei-title" data-split>Sensei</h2>
+          <div class="sensei-title">
+            <span class="sensei-ruby" lang="ja" aria-hidden="true">せんせい</span>
+            <h2 class="display" id="sensei-title" data-split>Sensei</h2>
+            <span class="sensei-big" lang="ja" aria-hidden="true">先生</span>
+          </div>
+          <p class="sensei-meaning">Основательница школы и носитель языка из Японии.</p>
+          <div class="deck-controls">
+            <button class="rail-arrow" type="button" data-deck-prev aria-label="Предыдущий преподаватель" data-magnetic><span aria-hidden="true">←</span></button>
+            <button class="rail-arrow" type="button" data-deck-next aria-label="Следующий преподаватель" data-magnetic><span aria-hidden="true">→</span></button>
+            <span class="deck-hint" aria-hidden="true">Листайте карточки</span>
+          </div>
         </div>
 
-        <article class="teacher teacher--founder">
-          <div class="teacher-photo" data-clip>
-            <img src="assets/nargiza-rakhimova.jpg" width="150" height="150" alt="Наргиза Рахимова" loading="lazy" decoding="async">
-          </div>
-          <div class="teacher-body">
-            <p class="teacher-kicker" data-reveal>Основательница школы</p>
-            <h3 class="teacher-name" data-split>Наргиза Рахимова</h3>
-            <p class="teacher-copy" data-reveal>Окончила Osaka University и представляла Казахстан на EXPO 2025 в Осаке. Ведёт занятия по собственной методике с упором на разговорный японский.</p>
-            <div class="teacher-links" data-reveal>
+        <div class="deck" data-deck role="region" aria-roledescription="карусель" aria-label="Преподаватели">
+          <article class="teacher-card" aria-label="Наргиза Рахимова">
+            <div class="teacher-top">
+              <div class="teacher-photo">
+                <img src="assets/nargiza-rakhimova.jpg" width="150" height="150" alt="Наргиза Рахимова" loading="lazy" decoding="async">
+              </div>
+              <p class="teacher-kicker">Основательница школы</p>
+            </div>
+            <h3 class="teacher-name">Наргиза Рахимова</h3>
+            <p class="teacher-copy">Окончила Osaka University и представляла Казахстан на EXPO 2025 в Осаке. Ведёт занятия по собственной методике с упором на разговорный японский.</p>
+            <div class="teacher-links">
               <a class="link" href="https://www.instagram.com/_ranari/" target="_blank" rel="noopener">Instagram Наргизы <span aria-hidden="true">↗</span></a>
               <a class="link" href="https://24.kz/ru/news/in-the-world/724944-900-tysyach-chelovek-posetili-pavilon-rk-na-expo-2025" target="_blank" rel="noopener">Репортаж с EXPO <span aria-hidden="true">↗</span></a>
             </div>
-          </div>
-        </article>
+            <span class="teacher-mark" lang="ja" aria-hidden="true">大阪</span>
+          </article>
 
-        <article class="teacher teacher--native">
-          <div class="teacher-photo teacher-photo--branch" data-clip aria-hidden="true">
-            <span class="kanji" lang="ja">先生</span>
-          </div>
-          <div class="teacher-body">
-            <p class="teacher-kicker" data-reveal>Hikari Native</p>
-            <h3 class="teacher-name" data-split>Преподаватель из Японии</h3>
-            <p class="teacher-copy" data-reveal>Индивидуальные разговорные уроки с носителем японского. Формат подходит ученикам с уровнем N4 и выше.</p>
-            <div class="teacher-links" data-reveal>
+          <article class="teacher-card teacher-card--native" aria-label="Преподаватель из Японии">
+            <div class="teacher-top">
+              <div class="teacher-photo teacher-photo--kanji" aria-hidden="true"><span lang="ja">先生</span></div>
+              <p class="teacher-kicker">Hikari Native</p>
+            </div>
+            <h3 class="teacher-name">Преподаватель из Японии</h3>
+            <p class="teacher-copy">Индивидуальные разговорные уроки с носителем японского. Формат подходит ученикам с уровнем N4 и выше.</p>
+            <div class="teacher-links">
               <a class="link" href="https://www.instagram.com/stories/highlights/18144557014602345/" target="_blank" rel="noopener">Команда в Instagram <span aria-hidden="true">↗</span></a>
             </div>
-          </div>
-        </article>
+            <span class="teacher-mark" lang="ja" aria-hidden="true">日本</span>
+          </article>
+        </div>
       </div>
     </section>
 
     <section class="results" id="results" tabindex="-1" aria-labelledby="jlpt-title">
-      <div class="wrap">
-        <div class="results-head">
-          <h2 class="display display--u" id="jlpt-title" data-split>Результаты JLPT</h2>
-          <p class="results-intro" data-reveal>Как ученики RANARI готовились к экзамену по японскому и сдавали его.</p>
-        </div>
-        <div class="stack">
-          <article class="stack-card" style="--i:0">
-            <span class="stack-level" aria-hidden="true">N4</span>
-            <div class="stack-body">
+      <div class="wrap results-head">
+        <h2 class="display display--u" id="jlpt-title" data-split>Результаты JLPT</h2>
+        <span class="pass-stamp" lang="ja" aria-hidden="true"><span>合</span><span>格</span></span>
+        <p class="results-intro" data-reveal>Как ученики RANARI готовились к экзамену по японскому и сдавали его.</p>
+      </div>
+      <div class="certs" data-certs>
+        <div class="certs-stage">
+          <ol class="ladder-scale" aria-hidden="true">
+            <li class="ladder-track"><i class="ladder-fill"></i></li>
+            <li data-level="5"><span>N5</span></li>
+            <li data-level="4"><span>N4</span></li>
+            <li data-level="3"><span>N3</span></li>
+            <li data-level="2"><span>N2</span></li>
+            <li data-level="1"><span>N1</span></li>
+          </ol>
+          <ol class="cert-deck">
+            <li class="cert" data-level="4">
+              <div class="cert-head"><span>JLPT</span><span lang="ja">日本語能力試験</span></div>
+              <p class="cert-level">N4</p>
               <h3>С нуля до N4</h3>
-              <p>Ученик в 11 лет прошёл путь с нуля до N4 за шесть месяцев.</p>
-            </div>
-          </article>
-          <article class="stack-card" style="--i:1">
-            <span class="stack-level" aria-hidden="true">N3</span>
-            <div class="stack-body">
+              <p class="cert-copy">Ученик в 11 лет прошёл путь с нуля до N4 за шесть месяцев.</p>
+              <dl class="cert-fields">
+                <div><dt>Старт</dt><dd>с нуля</dd></div>
+                <div><dt>Срок</dt><dd>6 месяцев</dd></div>
+                <div><dt>Возраст</dt><dd>11 лет</dd></div>
+              </dl>
+              <span class="cert-seal" lang="ja" aria-hidden="true"><span>合</span><span>格</span></span>
+            </li>
+            <li class="cert" data-level="3">
+              <div class="cert-head"><span>JLPT</span><span lang="ja">日本語能力試験</span></div>
+              <p class="cert-level">N3</p>
               <h3>N3 с первой попытки</h3>
-              <p>Ученик прошёл семимесячный курс и сдал экзамен с первой попытки.</p>
-            </div>
-          </article>
-          <article class="stack-card" style="--i:2">
-            <span class="stack-level" aria-hidden="true">N1</span>
-            <div class="stack-body">
+              <p class="cert-copy">Ученик прошёл семимесячный курс и сдал экзамен с первой попытки.</p>
+              <dl class="cert-fields">
+                <div><dt>Курс</dt><dd>7 месяцев</dd></div>
+                <div><dt>Попытка</dt><dd>первая</dd></div>
+              </dl>
+              <span class="cert-seal" lang="ja" aria-hidden="true"><span>合</span><span>格</span></span>
+            </li>
+            <li class="cert" data-level="1">
+              <div class="cert-head"><span>JLPT</span><span lang="ja">日本語能力試験</span></div>
+              <p class="cert-level">N1</p>
               <h3>Высший уровень JLPT</h3>
-              <p>Ученик сдал N1 после интенсивной подготовки.</p>
-            </div>
-          </article>
+              <p class="cert-copy">Ученик сдал N1 после интенсивной подготовки.</p>
+              <dl class="cert-fields">
+                <div><dt>Уровень</dt><dd>высший</dd></div>
+                <div><dt>Подготовка</dt><dd>интенсивная</dd></div>
+              </dl>
+              <span class="cert-seal" lang="ja" aria-hidden="true"><span>合</span><span>格</span></span>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
 
     <section class="reviews" id="reviews" tabindex="-1" aria-labelledby="reviews-title">
       <div class="wrap reviews-head">
-        <h2 class="display" id="reviews-title" data-split>Отзывы</h2>
+        <div class="reviews-title">
+          <svg class="bubble" viewBox="0 0 600 260" preserveAspectRatio="none" aria-hidden="true"><path d="M70 18 H530 Q582 18 582 70 V160 Q582 212 530 212 H190 L118 252 L132 212 H70 Q18 212 18 160 V70 Q18 18 70 18 Z"/></svg>
+          <h2 class="display" id="reviews-title" data-split>Отзывы</h2>
+          <span class="reviews-tag"><span lang="ja">口コミ</span> — «из уст в уста»</span>
+        </div>
         <a class="link" href="https://www.instagram.com/stories/highlights/18345958105213280/" target="_blank" rel="noopener">Отзывы в Instagram <span aria-hidden="true">↗</span></a>
       </div>
       <div class="review-rows">
         <div class="review-row" data-row>
           <ul class="review-list">
             <li class="review"><blockquote>«Спасибо большое! За эти 3 месяца мой уровень японского сильно вырос. Уроки были очень интересными.»</blockquote></li>
-            <li class="review"><blockquote>«За первый месяц изучения японского с нуля я уже могу представиться, рассказать о своём дне и понимать на слух.»</blockquote></li>
             <li class="review"><blockquote>«Объясняются тонкости сленга наряду с устоявшимися языковыми правилами. Не жалею, что начала именно так.»</blockquote></li>
             <li class="review"><blockquote>«Долго не решалась начать учить язык — было страшно, что ничего не пойму. На занятиях всё объясняется понятно и спокойно.»</blockquote></li>
           </ul>
@@ -467,7 +493,10 @@
 
   <footer class="site-footer" id="contact">
     <div class="wrap footer-top">
-      <h2 class="footer-title" data-split>Начнём говорить <em>по-японски?</em></h2>
+      <div class="footer-hook">
+        <p class="footer-kicker" lang="ja">日本語がわかると夢はもっと近くなる。</p>
+        <h2 class="footer-title" aria-label="Начнём говорить по-японски?"><span class="ft-line" aria-hidden="true">Начнём говорить</span> <em class="ft-swap" aria-hidden="true"><span class="ft-word" data-cycle="по-японски?|日本語で?|nihongo de?">по-японски?</span></em></h2>
+      </div>
       <a class="cta-orb" href="https://wa.me/message/GYXJ4VEGQCILA1" target="_blank" rel="noopener" data-magnetic data-cursor="Написать">
         <span>Написать<br>в WhatsApp</span><i aria-hidden="true">↗</i>
       </a>

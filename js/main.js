@@ -10,6 +10,8 @@
   if (typeof window.setupCarousel === 'function') document.querySelectorAll('[data-rail]').forEach(window.setupCarousel);
   setupReviews();
   setupMenu();
+  setupDeck();
+  setupFooterWord();
   setupLiquidGlass();
   // The menu panel is hidden at load, so its map is drawn the first time it opens.
   window.addEventListener('ranari:menu-open', () => {
@@ -75,7 +77,7 @@
             }
           });
           child.replaceWith(fragment);
-        } else if (child.nodeType === Node.ELEMENT_NODE) {
+        } else if (child.nodeType === Node.ELEMENT_NODE && !child.matches('.chip, .jq')) {
           walk(child);
         }
       });
@@ -87,8 +89,7 @@
   const heroTitle = q('.hero-title');
   const heroWords = splitWords(heroTitle);
   const splitHeadings = qa('[data-split]').filter(el => el !== heroTitle).map(el => [el, splitWords(el)]);
-  const introText = q('[data-words]');
-  const introWords = introText ? splitWords(introText, false) : [];
+  const wordBlocks = qa('[data-words]').map(el => [el, splitWords(el, false)]);
 
   /* ---------- Loader and hero intro ---------- */
   const heroImage = q('.hero-media img');
@@ -198,14 +199,16 @@
     });
   });
 
-  /* ---------- Marquee: a CSS loop that speeds up while scrolling ---------- */
-  const marqueeTrack = q('.marquee-track');
-  const marqueeLoop = marqueeTrack?.getAnimations ? marqueeTrack.getAnimations()[0] : null;
-  if (marqueeLoop) {
+  // Widths of text-driven animations (like the facts line) change once the web fonts arrive.
+  if (document.fonts?.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+  /* ---------- Running line: moves faster while the page scrolls ---------- */
+  const ledLoop = q('.led-track')?.getAnimations?.()[0];
+  if (ledLoop) {
     let rate = 1;
     gsap.ticker.add(() => {
       rate += (1 + Math.min(Math.abs(scrollVelocity()) * 0.08, 3) - rate) * 0.08;
-      marqueeLoop.playbackRate = rate;
+      ledLoop.playbackRate = rate;
     });
   }
 
@@ -223,18 +226,34 @@
     gsap.from(element, { y: 48, autoAlpha: 0, duration: 1.3, scrollTrigger: { trigger: element, start: 'top 90%' } });
   });
 
-  if (introWords.length) {
-    gsap.fromTo(introWords, { opacity: 0.14 }, {
+  // Long sentences are read in: each word inks in as the line passes the middle of the screen.
+  wordBlocks.forEach(([element, words]) => {
+    gsap.fromTo(words, { opacity: 0.14 }, {
       opacity: 1,
       stagger: 0.12,
       ease: 'none',
-      scrollTrigger: { trigger: introText, start: 'top 82%', end: 'bottom 48%', scrub: true }
+      scrollTrigger: { trigger: element, start: 'top 82%', end: 'bottom 48%', scrub: true }
+    });
+  });
+
+  // The line of facts slides sideways with the scroll, like credits.
+  const factsRow = q('.facts');
+  if (factsRow) {
+    gsap.fromTo(factsRow, { x: () => innerWidth * 0.12 }, {
+      x: () => -(factsRow.scrollWidth - innerWidth) - innerWidth * 0.04,
+      ease: 'none',
+      // The whole line passes while the strip is still on screen, so it can be read to the end.
+      scrollTrigger: { trigger: '.facts-strip', start: 'top 95%', end: 'top 15%', scrub: 0.6, invalidateOnRefresh: true }
     });
   }
 
   qa('[data-counter]').forEach(element => {
     const target = Number(element.dataset.counter);
     const state = { value: 0 };
+    // Reserve the final width so lines measured before the count (the facts strip) stay right.
+    element.style.display = 'inline-block';
+    element.style.minWidth = `${String(target).length}ch`;
+    element.style.textAlign = 'right';
     element.textContent = '0';
     gsap.to(state, {
       value: target,
@@ -256,38 +275,36 @@
     y: 30, autoAlpha: 0, delay: 0.4, scrollTrigger: { trigger: '.plans-rail', start: 'top 85%' }
   });
 
-  /* ---------- Sensei ---------- */
-  qa('[data-clip]').forEach(photo => {
-    const timeline = gsap.timeline({ scrollTrigger: { trigger: photo, start: 'top 85%' } });
-    timeline.fromTo(photo, { clipPath: 'circle(0% at 50% 50%)', rotation: -12 }, { clipPath: 'circle(50% at 50% 50%)', rotation: 0, duration: 1.6 });
-    const inner = q('img, .kanji', photo);
-    if (inner) timeline.fromTo(inner, { scale: 1.5 }, { scale: 1, duration: 2 }, 0);
+  /* ---------- Sensei: the deck rises in, the heading decodes, the kanji is inked ---------- */
+  if (q('.deck')) {
+    gsap.from('.deck', {
+      y: 120, rotation: 6, autoAlpha: 0, duration: 1.6,
+      scrollTrigger: { trigger: '.deck', start: 'top 85%' }
+    });
+  }
+  gsap.from('.sensei-ruby', { autoAlpha: 0, letterSpacing: '1.4em', duration: 1.6, scrollTrigger: { trigger: '.sensei-title', start: 'top 85%' } });
+  gsap.fromTo('.sensei-big', { '--ink': '0%' }, {
+    '--ink': '118%', ease: 'none',
+    scrollTrigger: { trigger: '.sensei-title', start: 'top 92%', end: 'bottom 40%', scrub: 1.4 }
   });
 
-  /* ---------- Results: cards stack and recede ---------- */
-  const stackCards = qa('.stack-card');
-  stackCards.forEach((card, index) => {
-    const level = q('.stack-level', card);
-    gsap.fromTo(level, { yPercent: 18 }, {
-      yPercent: -6,
-      ease: 'none',
-      scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: true }
-    });
-    const next = stackCards[index + 1];
-    if (!next) return;
-    gsap.fromTo(card, { scale: 1, filter: 'brightness(1)' }, {
-      scale: 0.9 + index * 0.02,
-      filter: 'brightness(0.95)',
-      ease: 'none',
-      scrollTrigger: {
-        trigger: next,
-        start: 'top bottom',
-        end: () => `top ${parseFloat(getComputedStyle(next).top) || 100}px`,
-        scrub: true,
-        invalidateOnRefresh: true
-      }
-    });
+  /* ---------- Results: the stamp lands, then the certificates fly off one by one ---------- */
+  gsap.from('.pass-stamp', {
+    scale: 2.6, rotation: 18, autoAlpha: 0, duration: 0.7, ease: 'power4.in',
+    scrollTrigger: { trigger: '.results-head', start: 'top 70%' }
   });
+  setupCertificates();
+
+  /* ---------- Reviews: the speech bubble draws itself ---------- */
+  const bubble = q('.bubble path');
+  if (bubble) {
+    const length = bubble.getTotalLength();
+    gsap.fromTo(bubble, { strokeDasharray: length, strokeDashoffset: length }, {
+      strokeDashoffset: 0, ease: 'none',
+      scrollTrigger: { trigger: '.reviews-title', start: 'top 85%', end: 'bottom 50%', scrub: true }
+    });
+    gsap.from('.reviews-tag', { y: 20, autoAlpha: 0, duration: 1.2, scrollTrigger: { trigger: '.reviews-title', start: 'top 60%' } });
+  }
 
   /* ---------- Footer ---------- */
   gsap.from('.wordmark span', {
@@ -297,6 +314,62 @@
     scrollTrigger: { trigger: '.wordmark', start: 'top bottom', end: 'bottom bottom', scrub: true }
   });
   gsap.from('.cta-orb', { scale: 0, rotation: -90, duration: 1.6, scrollTrigger: { trigger: '.cta-orb', start: 'top 92%' } });
+
+  // After the deck pattern from 21st.dev ("Stacked Deck Scroll Reveal"): the section pins, the
+  // certificates rise into a stack, then the front one flies off and the next moves up.
+  // The JLPT scale above fills to the level of the certificate in front.
+  function setupCertificates() {
+    const root = q('[data-certs]');
+    if (!root) return;
+    const certs = qa('.cert', root);
+    const levels = qa('.ladder-scale li[data-level]', root);
+    const fill = q('.ladder-fill', root);
+    if (!certs.length) return;
+    root.classList.add('is-pinned');
+    const peek = () => (innerWidth < 700 ? 14 : 22);
+    const pose = index => ({ y: index * peek(), scale: 1 - index * 0.045 });
+    const markLevel = index => {
+      const level = Number(certs[Math.max(0, Math.min(certs.length - 1, index))].dataset.level);
+      levels.forEach(item => {
+        const value = Number(item.dataset.level);
+        item.classList.toggle('is-reached', value >= level);
+        item.classList.toggle('is-current', value === level);
+      });
+      gsap.to(fill, { scaleX: (5 - level) / 4, duration: 0.8, ease: 'power3.out', overwrite: true });
+    };
+    certs.forEach((cert, index) => gsap.set(cert, { zIndex: certs.length - index, transformOrigin: '50% 0%' }));
+    let flyAt = Infinity;
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: () => `+=${certs.length * innerHeight * 0.9}`,
+        pin: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const flown = Math.floor(self.progress * timeline.duration() - flyAt + 0.5);
+          markLevel(Number.isFinite(flown) ? Math.max(0, flown) : 0);
+        }
+      }
+    });
+    certs.forEach((cert, index) => {
+      timeline.fromTo(cert,
+        { y: () => innerHeight * 0.6 + index * peek(), scale: pose(index).scale * 0.92, rotation: index % 2 ? 4 : -4 },
+        { y: () => pose(index).y, scale: pose(index).scale, rotation: 0, ease: 'power3.out', duration: 1 }, index * 0.08);
+    });
+    timeline.to({}, { duration: 0.3 });
+    flyAt = timeline.duration();
+    certs.slice(0, -1).forEach((cert, index) => {
+      const at = flyAt + index;
+      timeline.to(cert, { y: () => -innerHeight * 1.1, rotation: index % 2 ? 18 : -22, scale: 0.94, ease: 'power1.in', duration: 1 }, at);
+      timeline.to(certs.slice(index + 1), {
+        y: i => pose(i).y, scale: i => pose(i).scale, ease: 'none', duration: 1
+      }, at);
+    });
+    timeline.to({}, { duration: 0.4 });
+    markLevel(0);
+  }
 
   /* ---------- Header, cursor, magnetic buttons, petals ---------- */
   setupHeader(lenis);
@@ -470,6 +543,117 @@
       row.style.setProperty('--dur', `${Math.round(list.scrollWidth / 2 / 38)}s`);
       row.classList.add('is-looping');
     });
+  }
+
+  // Teacher cards lie in a fanned deck. Drag the top card aside (or use the arrows) and it goes to the back.
+  function setupDeck() {
+    const deck = q('[data-deck]');
+    if (!deck) return;
+    const order = qa('.teacher-card', deck);
+    const prevButton = q('[data-deck-prev]');
+    const nextButton = q('[data-deck-next]');
+    let busy = false;
+
+    function layout() {
+      order.forEach((card, index) => {
+        card.style.setProperty('--pos', index);
+        card.dataset.pos = index;
+        card.inert = index !== 0;
+      });
+    }
+
+    function sendBack(direction) {
+      if (busy || order.length < 2) return;
+      busy = true;
+      const top = order[0];
+      top.classList.remove('dragging');
+      top.style.transition = 'transform .42s cubic-bezier(.45, 0, .7, .4)';
+      top.style.transform = `translate(${direction * 115}%, -6%) rotate(${direction * 14}deg)`;
+      setTimeout(() => {
+        order.push(order.shift());
+        top.style.transition = '';
+        top.style.transform = '';
+        layout();
+        busy = false;
+      }, reduce ? 0 : 400);
+    }
+
+    function bringFront() {
+      if (busy || order.length < 2) return;
+      busy = true;
+      const card = order[order.length - 1];
+      card.style.transition = 'none';
+      card.style.transform = 'translate(-115%, -6%) rotate(-14deg)';
+      order.unshift(order.pop());
+      layout();
+      card.getBoundingClientRect();
+      card.style.transition = '';
+      card.style.transform = '';
+      setTimeout(() => { busy = false; }, 300);
+    }
+
+    nextButton?.addEventListener('click', () => sendBack(1));
+    prevButton?.addEventListener('click', bringFront);
+    deck.addEventListener('keydown', event => {
+      if (event.key === 'ArrowRight') sendBack(1);
+      if (event.key === 'ArrowLeft') bringFront();
+    });
+
+    let drag = null;
+    deck.addEventListener('pointerdown', event => {
+      const card = event.target.closest('.teacher-card');
+      if (!card || card !== order[0] || busy || event.target.closest('a, button') || event.button !== 0) return;
+      drag = { card, id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, t: performance.now(), axis: null };
+    });
+    deck.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      if (!drag.axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (drag.axis === 'y') { drag = null; return; }
+        drag.card.setPointerCapture(event.pointerId);
+        drag.card.classList.add('dragging');
+      }
+      drag.dx = dx;
+      drag.card.style.transform = `translate(${dx}px, ${dy * 0.15}px) rotate(${dx * 0.04}deg)`;
+    });
+    const release = event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { card, dx, t, axis } = drag;
+      drag = null;
+      if (axis !== 'x') return;
+      const speed = Math.abs(dx) / Math.max(1, performance.now() - t);
+      if (Math.abs(dx) > 90 || speed > 0.6) { sendBack(Math.sign(dx) || 1); return; }
+      card.classList.remove('dragging');
+      card.style.transform = '';
+    };
+    deck.addEventListener('pointerup', release);
+    deck.addEventListener('pointercancel', release);
+    layout();
+  }
+
+  // The closing line: the last word gently changes language, a plain crossfade.
+  function setupFooterWord() {
+    const word = q('[data-cycle]');
+    if (!word || reduce) return;
+    const options = word.dataset.cycle.split('|');
+    let index = 0;
+    let visible = false;
+    if ('IntersectionObserver' in window) new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(word);
+    setInterval(() => {
+      if (!visible || document.hidden) return;
+      index = (index + 1) % options.length;
+      const next = options[index];
+      const out = word.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' });
+      out.onfinish = () => {
+        word.textContent = next;
+        word.classList.toggle('is-ja', /[\u3040-\u30ff\u4e00-\u9fff]/.test(next));
+        out.cancel();
+        word.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-in-out' });
+      };
+    }, 3200);
   }
 
   function setupMenu() {
