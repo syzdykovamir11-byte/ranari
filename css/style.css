@@ -445,9 +445,10 @@ section { position: relative; z-index: 1; }
 @keyframes led-run { to { transform: translateX(-50%); } }
 .led-group {
   display: flex; align-items: center; padding: clamp(22px, 3vw, 40px) 0;
-  font: 600 clamp(2rem, 5.6vw, 4.8rem)/1 var(--font); white-space: nowrap;
+  /* The same type as the numbers in the facts line below. */
+  font: 300 clamp(3.6rem, 11vw, 10rem)/.9 var(--heading); letter-spacing: -.04em; white-space: nowrap;
 }
-.led-group span[lang="ja"] { font-family: var(--font), 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', sans-serif; color: var(--rose); }
+.led-group span[lang="ja"] { font-family: var(--jp); font-weight: 500; letter-spacing: 0; color: var(--rose); }
 /* The same small blossom that separates the facts. */
 .led-group i {
   flex: none; width: clamp(14px, 1.6vw, 22px); aspect-ratio: 1; margin-inline: clamp(28px, 5vw, 80px);
