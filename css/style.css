@@ -113,14 +113,14 @@ em { font-style: normal; color: var(--rose); }
   font-size: clamp(3.6rem, 12vw, 12rem);
 }
 /* Section titles in Unbounded: Тарифы and Результаты JLPT. */
-/* "Отзывы" in the hero's heavy rose type: pale at first, it fills with rose from left to
+/* "Тарифы" and "Отзывы" in the hero's heavy rose type: pale at first, it fills with rose from left to
    right as the section scrolls in. */
-.reviews-word {
+.fill-word {
   font: 800 clamp(3.2rem, 11vw, 10rem)/.95 var(--heading); letter-spacing: -.045em;
   color: var(--rose);
 }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .reviews-word {
+  .fill-word {
     color: transparent;
     background: linear-gradient(90deg, var(--rose) 0 50%, rgb(162 52 75 / 16%) 50%) no-repeat;
     background-size: 200% 100%; background-position: var(--fill, 100%) 0;
@@ -514,17 +514,10 @@ section { position: relative; z-index: 1; }
 }
 .plans-intro { gap: clamp(28px, 4vw, 48px); align-items: stretch; }
 .plans-top { display: grid; gap: 24px; align-items: end; }
-/* The two notes read as labelled facts, not as a subtitle under the heading. */
-.plans-notes { display: grid; gap: 14px; }
-.plans-notes div { display: grid; grid-template-columns: max-content 1fr; gap: 12px 20px; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line); }
-.plans-notes dt { font: 600 .74rem/1.2 var(--heading); letter-spacing: .08em; text-transform: uppercase; color: var(--rose); }
-.plans-notes dd { font-size: 1.04rem; color: var(--ink-2); }
 .plans-catalog { align-self: flex-start; }
 @media (min-width: 900px) {
-  .plans-top { grid-template-columns: 1fr minmax(320px, 30rem); }
 }
 @media (max-width: 700px) {
-  .plans-notes div { grid-template-columns: 1fr; gap: 6px; }
 }
 
 /* Shared rail. Without JS it is a native swipe row; with JS the active card sits in the centre. */
