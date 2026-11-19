@@ -459,20 +459,18 @@ section { position: relative; z-index: 1; }
 
 /* ---------- Intro: an editorial sentence with small pictures set into the line ---------- */
 .intro { padding: clamp(96px, 16vw, 220px) 0 clamp(72px, 10vw, 140px); overflow: clip; }
-/* The intro is set as a few cards, each a readable piece of the sentence. */
-.intro-cards { display: grid; gap: clamp(12px, 1.6vw, 20px); }
-.icard {
-  padding: clamp(24px, 3.2vw, 44px); border-radius: 26px; background: var(--washi-3); border: 1px solid var(--line);
-  font: 500 clamp(1.6rem, 2.8vw, 2.6rem)/1.15 var(--display); letter-spacing: -.01em;
+/* The intro is plain large type on the page: no boxes, only thin rules between the lines. */
+.intro-lines { display: grid; }
+.iline {
+  padding-block: clamp(18px, 2.6vw, 34px); border-top: 1px solid var(--line);
+  font: 500 clamp(1.9rem, 4.2vw, 3.8rem)/1.08 var(--display); letter-spacing: -.02em; max-width: 24ch;
 }
-.icard--lead { font-size: clamp(2.3rem, 5.4vw, 5rem); line-height: 1.02; letter-spacing: -.02em; }
-.icard--rose { background: var(--sakura-pale); border-color: rgb(162 52 75 / 18%); }
-.icard--dark { background: var(--bowl); color: var(--washi); border-color: transparent; }
+.iline .wd { transition: none; }
+.iline--lead { border-top: 0; padding-top: 0; font-size: clamp(2.5rem, 6.4vw, 6rem); line-height: 1; max-width: 16ch; }
+.iline:last-child { border-bottom: 1px solid var(--line); }
 @media (min-width: 900px) {
-  .intro-cards { grid-template-columns: 1.25fr 1fr; }
-  .icard--lead { grid-column: 1 / -1; padding-block: clamp(36px, 4vw, 56px); }
-  .icard:nth-child(3) { align-self: stretch; display: flex; align-items: flex-end; }
-  .icard--dark { grid-column: 1 / -1; }
+  /* Every second line steps in, so the block reads like set type rather than a list. */
+  .iline:nth-child(odd):not(.iline--lead) { margin-left: clamp(0px, 14vw, 240px); max-width: 28ch; }
 }
 
 /* Facts: one line of large numbers that slides sideways while the page scrolls. */
