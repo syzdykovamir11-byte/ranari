@@ -414,7 +414,7 @@ section { position: relative; z-index: 1; }
   max-width: 11ch;
 }
 .hero-title em { display: block; font-weight: 800; letter-spacing: -.035em; }
-.hero-bottom { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; max-width: 60rem; }
+.hero-bottom { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; max-width: 60rem; }
 .hero-sub { max-width: 26ch; font-size: clamp(1.05rem, 1.6vw, 1.3rem); line-height: 1.45; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 .scroll-cue {
@@ -505,7 +505,7 @@ section { position: relative; z-index: 1; }
 .plans-top { display: grid; gap: 24px; align-items: end; }
 /* The two notes read as labelled facts, not as a subtitle under the heading. */
 .plans-notes { display: grid; gap: 14px; }
-.plans-notes div { display: grid; grid-template-columns: 9.5rem 1fr; gap: 12px; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line); }
+.plans-notes div { display: grid; grid-template-columns: max-content 1fr; gap: 12px 20px; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line); }
 .plans-notes dt { font: 600 .74rem/1.2 var(--heading); letter-spacing: .08em; text-transform: uppercase; color: var(--rose); }
 .plans-notes dd { font-size: 1.04rem; color: var(--ink-2); }
 .plans-catalog { align-self: flex-start; }
@@ -658,7 +658,7 @@ section { position: relative; z-index: 1; }
 .teacher-photo--kanji { display: grid; place-items: center; background: var(--rose); color: var(--washi); box-shadow: 0 0 0 5px var(--sakura-pale), 0 0 0 6px rgb(162 52 75 / 28%); }
 .teacher-photo--kanji span { font-size: clamp(1.4rem, 2.4vw, 1.9rem); letter-spacing: .04em; }
 .teacher-kicker { font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--rose); }
-.teacher-name { font: 500 clamp(2.4rem, 4.6vw, 4.4rem)/.92 var(--display); letter-spacing: -.025em; max-width: 11ch; }
+.teacher-name { font: 500 clamp(2.4rem, 4.6vw, 4.4rem)/.92 var(--display); letter-spacing: -.025em; max-width: 14ch; }
 .teacher-copy { font-size: clamp(1rem, 1.3vw, 1.12rem); color: var(--ink-2); max-width: 38ch; }
 .teacher-links { display: flex; flex-wrap: wrap; gap: 4px 24px; margin-top: auto; }
 .teacher-mark {
