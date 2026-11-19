@@ -446,7 +446,7 @@ section { position: relative; z-index: 1; }
 .led-group {
   display: flex; align-items: center; padding: clamp(22px, 3vw, 40px) 0;
   /* The same type as the numbers in the facts line below. */
-  font: 300 clamp(3.6rem, 11vw, 10rem)/.9 var(--heading); letter-spacing: -.04em; white-space: nowrap;
+  font: 300 clamp(2.2rem, 6vw, 5.6rem)/.9 var(--heading); letter-spacing: -.04em; white-space: nowrap;
 }
 .led-group span[lang="ja"] { font-family: var(--jp); font-weight: 500; letter-spacing: 0; color: var(--rose); }
 /* The same small blossom that separates the facts. */
@@ -754,11 +754,12 @@ section { position: relative; z-index: 1; }
   background: var(--washi-3); border: 1px solid var(--line);
   transition: transform .6s var(--ease), background-color .4s;
 }
-.review:hover { transform: translateY(-6px); background: var(--sakura-pale); }
+@media (hover: hover) and (pointer: fine) { .review:hover { transform: translateY(-6px); background: var(--sakura-pale); } }
 .review blockquote { font: 500 clamp(1.35rem, 2vw, 1.7rem)/1.2 var(--display); letter-spacing: -.005em; }
 .js .review-row.is-looping .review-list { animation: rows var(--dur, 60s) linear infinite; }
 .js .review-row--reverse.is-looping .review-list { animation-direction: reverse; }
-.review-row:hover .review-list { animation-play-state: paused; }
+/* Pause on hover only with a mouse: on phones a tap leaves :hover stuck and froze the row. */
+@media (hover: hover) and (pointer: fine) { .review-row:hover .review-list { animation-play-state: paused; } }
 @keyframes rows { to { transform: translateX(-50%); } }
 .review-row:not(.is-looping) { overflow-x: auto; padding-inline: var(--gutter); scroll-snap-type: x mandatory; }
 .review-row:not(.is-looping) .review { scroll-snap-align: start; }
