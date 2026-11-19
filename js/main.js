@@ -172,33 +172,82 @@
   // close to the camera; background branches drift slowly behind the content.
   const scrollVelocity = () => (lenis && Number.isFinite(lenis.velocity) ? lenis.velocity : 0);
   const branches = qa('.branch');
-  branches.forEach(branch => {
-    const speed = parseFloat(branch.dataset.speed) || 0.7;
-    const front = branch.classList.contains('branch--front');
-    const fromRight = branch.classList.contains('branch--r');
-    const travel = front ? 0.26 : 0.18;
-    // One trigger per branch: parallax and scale run across the whole pass, the growth out of
-    // the edge and the fade-in take the first half. Separate triggers would measure each other's offsets.
-    // A long scrub lets the branch catch up with the page softly instead of snapping to it.
-    gsap.timeline({
-      scrollTrigger: { trigger: branch, start: 'top bottom', end: 'bottom top', scrub: 1.8, invalidateOnRefresh: true }
-    })
-      .fromTo(branch,
-        { y: () => innerHeight * speed * travel, scale: front ? 0.94 : 1 },
-        { y: () => -innerHeight * speed * travel, scale: front ? 1.08 : 1, ease: 'none', duration: 1 }, 0)
-      .fromTo(branch,
-        { xPercent: fromRight ? 45 : -45 },
-        { xPercent: 0, ease: 'sine.out', duration: 0.5 }, 0)
-      .fromTo(branch, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'sine.inOut', duration: 0.22 }, 0);
+  const grove = q('.grove');
+  // Each branch is tied to a block of the page (data-anchor) and sits level with its top, middle or
+  // bottom edge (data-at), mostly in the empty space between sections, so it passes beside the
+  // content instead of over whatever happens to be at a percentage of the page.
+  const placeBranches = () => {
+    if (!grove) return;
+    const groveTop = grove.getBoundingClientRect().top + scrollY;
+    branches.forEach(branch => {
+      const anchor = q(branch.dataset.anchor || '');
+      if (!anchor) return;
+      const box = anchor.getBoundingClientRect();
+      const at = branch.dataset.at || 'center';
+      const edge = box.top + scrollY - groveTop + (at === 'top' ? 0 : at === 'bottom' ? box.height : box.height / 2);
+      branch.style.top = `${Math.round(edge - branch.offsetHeight / 2)}px`;
+    });
+  };
+  placeBranches();
+  ScrollTrigger.addEventListener('refresh', placeBranches);
+
+  const anchorOf = branch => q(branch.dataset.anchor || '') || branch;
+  const branchMedia = gsap.matchMedia();
+  // Computers: the branch rises faster than the page, grows a little and comes out of the edge.
+  branchMedia.add('(min-width: 701px)', () => {
+    branches.forEach(branch => {
+      const speed = parseFloat(branch.dataset.speed) || 0.7;
+      const fromRight = branch.classList.contains('branch--r');
+      const travel = 0.26;
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: anchorOf(branch),
+          start: () => `${branch.dataset.at || 'center'} bottom+=${branch.offsetHeight / 2}`,
+          end: () => `${branch.dataset.at || 'center'} top-=${branch.offsetHeight / 2}`,
+          scrub: 1.2,
+          invalidateOnRefresh: true
+        }
+      })
+        .fromTo(branch,
+          { y: () => innerHeight * speed * travel, scale: 0.94 },
+          { y: () => -innerHeight * speed * travel, scale: 1.08, ease: 'none', duration: 1 }, 0)
+        .fromTo(branch, { xPercent: fromRight ? 45 : -45 }, { xPercent: 0, ease: 'sine.out', duration: 0.5 }, 0)
+        .fromTo(branch, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'sine.inOut', duration: 0.22 }, 0);
+    });
+  });
+  // Phones: an even pass with no lag. The branch slides out of the edge as it enters, drifts with
+  // the page, and slides back into the edge as it leaves.
+  branchMedia.add('(max-width: 700px)', () => {
+    branches.forEach(branch => {
+      if (!branch.offsetParent) return;
+      const fromRight = branch.classList.contains('branch--r');
+      const out = fromRight ? 38 : -38;
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: anchorOf(branch),
+          start: () => `${branch.dataset.at || 'center'} bottom+=${branch.offsetHeight / 2}`,
+          end: () => `${branch.dataset.at || 'center'} top-=${branch.offsetHeight / 2}`,
+          scrub: 0.3,
+          invalidateOnRefresh: true
+        }
+      })
+        .fromTo(branch, { y: () => innerHeight * 0.12 }, { y: () => -innerHeight * 0.12, ease: 'none', duration: 1 }, 0)
+        .fromTo(branch, { xPercent: out }, { xPercent: 0, ease: 'power1.out', duration: 0.32 }, 0)
+        .to(branch, { xPercent: out, ease: 'power1.in', duration: 0.32 }, 0.68);
+    });
   });
 
   // Wind: a slow idle sway plus a gust that follows scroll speed. Each branch pivots at its trunk.
+  // On phones only a small idle sway, so the branches never seem to stall.
   let gust = 0;
+  const phone = matchMedia('(max-width: 700px)');
   gsap.ticker.add(time => {
-    gust += (Math.max(-7, Math.min(7, scrollVelocity() * 0.3)) - gust) * 0.05;
+    const small = phone.matches;
+    gust += ((small ? 0 : Math.max(-7, Math.min(7, scrollVelocity() * 0.3))) - gust) * 0.05;
     branches.forEach((branch, index) => {
+      if (!branch.offsetParent) return;
       const side = branch.classList.contains('branch--r') ? 1 : -1;
-      const idle = Math.sin(time * (0.5 + (index % 3) * 0.12) + index * 1.7) * 1.6;
+      const idle = Math.sin(time * (0.5 + (index % 3) * 0.12) + index * 1.7) * (small ? 0.8 : 1.6);
       gsap.set(branch, { rotation: side * (idle + gust * (0.5 + (index % 4) * 0.12)) });
     });
   });
@@ -312,17 +361,6 @@
     scrollTrigger: { trigger: '.results-head', start: 'top 70%' }
   });
   setupCertificates();
-
-  /* ---------- Reviews: the speech bubble draws itself ---------- */
-  const bubble = q('.bubble path');
-  if (bubble) {
-    const length = bubble.getTotalLength();
-    gsap.fromTo(bubble, { strokeDasharray: length, strokeDashoffset: length }, {
-      strokeDashoffset: 0, ease: 'none',
-      scrollTrigger: { trigger: '.reviews-title', start: 'top 85%', end: 'bottom 50%', scrub: true }
-    });
-    gsap.from('.reviews-tag', { y: 20, autoAlpha: 0, duration: 1.2, scrollTrigger: { trigger: '.reviews-title', start: 'top 60%' } });
-  }
 
   /* ---------- Footer ---------- */
   gsap.from('.wordmark span', {
